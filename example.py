@@ -2,7 +2,7 @@ import pymongo
 import configparser
 
 config = configparser.ConfigParser()
-config.read("exampleconfig.ini")
+config.read("config.ini")
 user = config.get("Credentials", "User")
 password = config.get("Credentials", "Password")
 

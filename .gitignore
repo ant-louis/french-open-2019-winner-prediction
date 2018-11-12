@@ -1,2 +1,6 @@
 *.ama
 config.ini
+Data/*.xlsx
+Data/*.xls
+Data/*.zip
+importscript.sh
