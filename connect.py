@@ -1,5 +1,6 @@
 import pymongo
 import configparser
+import pprint
 
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -8,4 +9,6 @@ password = config.get("Credentials", "Password")
 
 connectString = "mongodb+srv://{}:{}@cluster0-yhwvj.gcp.mongodb.net/test?retryWrites=true".format(user,password)
 client = pymongo.MongoClient(connectString)
-print(client.list_database_names())
+db = client.Tournaments
+collection = db.Tournament2011
+pprint.pprint(collection.find())
