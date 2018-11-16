@@ -4,7 +4,7 @@ import numpy as np
 
 
 # Read the excel file containing 50.000 matches from 2000 to 2018
-df = pd.read_excel('Datasets/2000-2018.xls')
+df = pd.read_excel('2000-2018.xls')
 
 # Replace all NaN with 0
 df.fillna(0, inplace=True)
