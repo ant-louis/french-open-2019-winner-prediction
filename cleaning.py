@@ -45,7 +45,6 @@ df.drop(columns=["Date"], inplace = True)
 cols = df.columns.tolist()
 cols = cols[-2:] + cols[:-2]
 df = df[cols]
-df.head()
 
 # Export to csv
 df.to_csv('2000_2018_cleaned.csv', sep=',', encoding='utf-8')

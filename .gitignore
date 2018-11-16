@@ -4,3 +4,4 @@ Data/*.xlsx
 Data/*.xls
 Data/*.zip
 importscript.sh
+.DS_Store
