@@ -18,7 +18,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 try:
-    for playerID in range(74,500):
+    for playerID in range(252,5000):
         """
         Getting profile information
         """
@@ -43,7 +43,7 @@ try:
                 info[th.text] = [td.text.strip().split(" ")[0]] #Values are lists to simplify dataframe building 
 
         #Checking best rank, disregarding if higher than 200
-        if int(info['Best Rank'][0].split(" ")[0]) > 200:
+        if int(info['Best Rank'][0].split(" ")[0]) > 150:
             logger.info("Dropping cause low rank")
             browser.close()
             continue

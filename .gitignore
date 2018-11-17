@@ -4,3 +4,8 @@ Data/*.xlsx
 Data/*.xls
 Data/*.zip
 importscript.sh
+.vscode/
+Pipfile
+Pipfile.lock
+chromedriver
+scrapedPlayerInfo/
