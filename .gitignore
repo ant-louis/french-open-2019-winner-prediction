@@ -9,3 +9,4 @@ Pipfile
 Pipfile.lock
 chromedriver
 scrapedPlayerInfo/
+.DS_Store
