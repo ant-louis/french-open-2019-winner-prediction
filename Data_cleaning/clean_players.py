@@ -1,6 +1,7 @@
-import glob
-import os
+import glob, os
 import pandas as pd
+import numpy as np
+
 
 
 # Concatenate all csv files in one
@@ -30,7 +31,9 @@ to_drop = ['Active',
           'Opponent Elo Rating',
           'Peak Elo Rating',
           'Plays',
+          'Prize Money',
           'Residence',
+          'Retired',
            'Turned Pro',
           'Twitter',
           'Web Site',
@@ -39,7 +42,6 @@ to_drop = ['Active',
           'Wikipedia',
           'World Team Cup']
 df.drop(columns=to_drop, inplace=True)
-
 
 # Reorder columns
 cols = ['First Name', 'Last Name', 'Country', 'Current Rank', 'Age',
@@ -73,4 +75,4 @@ df.sort_values(by=['Ranking'], inplace = True)
 df.reset_index(drop=True, inplace=True)
 
 # Export to csv
-df.to_csv('players_data.csv', sep='\t', encoding='utf-8')
+df.to_csv('players_data.csv', sep=',', encoding='utf-8')
