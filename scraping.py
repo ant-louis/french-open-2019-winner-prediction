@@ -2,10 +2,20 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import pandas as pd
 import logging
+import sys
 
 """
 Logging mecanism
 """
+if(len(sys.argv) != 3):
+    print("Call with \"python scraping.py lowerbound upperbound\"")
+    exit()
+
+
+low = int(sys.argv[1])
+up = int(sys.argv[2])
+assert(low < up)
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 # create a file handler
@@ -18,7 +28,8 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 try:
-    for playerID in range(252,5000):
+    for playerID in range(low,up):
+        print(playerID)
         """
         Getting profile information
         """
@@ -42,13 +53,16 @@ try:
             for td, th in zip(tr.find_all("td"),tr.find_all("th")):
                 info[th.text] = [td.text.strip().split(" ")[0]] #Values are lists to simplify dataframe building 
 
-        #Checking best rank, disregarding if higher than 200
-        if int(info['Best Rank'][0].split(" ")[0]) > 150:
-            logger.info("Dropping cause low rank")
+        #Checking current rank, disregarding if higher than 500
+        if "Current Rank" not in info:
+            logger.info("Dropping cause no rank")
             browser.close()
             continue
-        else:
+        elif int(info['Current Rank'][0].split(" ")[0]) > 500:
+            logger.info("Dropping cause low current rank")
             browser.close()
+            continue
+
 
         """
         Getting performance information
