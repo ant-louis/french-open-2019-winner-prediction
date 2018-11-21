@@ -4,7 +4,7 @@ import numpy as np
 
 
 # Concatenate all csv files in one
-path =r'Data/scrapedPlayerInfo'
+path =r'Original_data/scrapedPlayerInfo'
 all_files = glob.glob(os.path.join(path, "*.csv"))
 files_df = (pd.read_csv(file, header=0) for file in all_files)
 df = pd.concat(files_df, ignore_index=True)
@@ -188,4 +188,4 @@ df['Favorite Surface'].fillna('None', inplace=True)
 df.fillna(0, inplace=True)
 
 # Export to csv
-df.to_csv('players_data.csv', sep=',', encoding='utf-8', float_format='%.3f', decimal='.')
+df.to_csv('cleaned_players_data.csv', sep=',', encoding='utf-8', float_format='%.3f', decimal='.')

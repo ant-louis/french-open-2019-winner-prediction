@@ -46,4 +46,4 @@ cols = cols[-2:] + cols[:-2]
 df = df[cols]
 
 # Export to csv
-df.to_csv('2000_2018_cleaned.csv', sep=',', encoding='utf-8', float_format='%.0f')
+df.to_csv('cleaned_matches_data.csv', sep=',', encoding='utf-8', float_format='%.0f')
