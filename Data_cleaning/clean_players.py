@@ -3,15 +3,11 @@ import pandas as pd
 import numpy as np
 
 
-
 # Concatenate all csv files in one
 path =r'Data/scrapedPlayerInfo'
 all_files = glob.glob(os.path.join(path, "*.csv"))
 files_df = (pd.read_csv(file, header=0) for file in all_files)
 df = pd.concat(files_df, ignore_index=True)
-
-# Replace all NaN with 0
-df.fillna(0, inplace=True)
 
 # Drop useless columns
 to_drop = ['Active',
@@ -45,7 +41,7 @@ df.drop(columns=to_drop, inplace=True)
 
 # Reorder columns
 cols = ['First Name', 'Last Name', 'Country', 'Current Rank', 'Age',
-'Favorite Surface', 'Best Rank', 'Best Season', 'Last Appearance', 'Seasons', 'Retired', 'Prize Money', 'Win',
+'Favorite Surface', 'Best Rank', 'Best Season', 'Last Appearance', 'Seasons', 'Win',
 'ATP 250', 'ATP 500', 'Masters', 'Tour Finals', 'Grand Slam', 'Grand Slams',
 'Round of 128', 'Round of 64', 'Round of 32', 'Round of 16', 'Quarter-Final', 'Semi-Final', 'Final',
 'Vs No. 1', 'Vs Top 5', 'Vs Top 10', 'Vs Top 20', 'Vs Top 50', 'Vs Top 100',
@@ -63,16 +59,133 @@ cols = ['First Name', 'Last Name', 'Country', 'Current Rank', 'Age',
 'Upsets', 'Upsets %', 'Upsets scored', 'Upsets scored %', 'Upsets against', 'Upsets against %',
 'Very Slow', 'Slow', 'Medium', 'Medium Slow', 'Medium Fast', 'Fast', 'Very Fast',
 'Carpet', 'Clay', 'Grass', 'Indoor', 'Outdoor', 'Hard',
-'H2H %', 'Titles', 'Round-Robin', 'Alt. Finals', 'Opponent Rank']
+'H2H %', 'Opponent Rank','Alt. Finals', 'Round-Robin', 'Titles']
 df = df[cols]
 
+# Rename columns with percentages
+to_rename={'Win' : 'Win %',
+           'ATP 250' : 'ATP 250 %',
+           'ATP 500' : 'ATP 500 %', 
+           'Masters' : 'Masters %', 
+           'Tour Finals' : 'Tour Finals %', 
+           'Grand Slam' : 'Grand Slam %',
+           'Round of 128' :'Round of 128 %',
+           'Round of 64':'Round of 64 %', 
+           'Round of 32':'Round of 32 %', 
+           'Round of 16':'Round of 16 %',
+           'Quarter-Final':'Quarter-Final %', 
+           'Semi-Final':'Semi-Final %', 
+           'Final':'Final %',
+           'Vs No. 1':'Vs No. 1 %', 
+           'Vs Top 5':'Vs Top 5 %', 
+           'Vs Top 10':'Vs Top 10 %', 
+           'Vs Top 20':'Vs Top 20 %', 
+           'Vs Top 50':'Vs Top 50 %', 
+           'Vs Top 100':'Vs Top 100 %',
+           'Deciding Set':'Deciding Set %',
+           'Best of 5':'Best of 5 %', 
+           'Best of 5: 0:0':'Best of 5: 0:0 %', 
+           'Best of 5: 0:1':'Best of 5: 0:1 %', 
+           'Best of 5: 0:2':'Best of 5: 0:2 %', 
+           'Best of 5: 0:3':'Best of 5: 0:3 %', 
+           'Best of 5: 0:4':'Best of 5: 0:4 %', 
+           'Best of 5: 1:0':'Best of 5: 1:0 %', 
+           'Best of 5: 1:2':'Best of 5: 1:2 %', 
+           'Best of 5: 1:3':'Best of 5: 1:3 %', 
+           'Best of 5: 1:4':'Best of 5: 1:4 %', 
+           'Best of 5: 2:0':'Best of 5: 2:0 %', 
+           'Best of 5: 2:1':'Best of 5: 2:1 %', 
+           'Best of 5: 2:2':'Best of 5: 2:2 %', 
+           'Fifth Set':'Fifth Set %',
+           'Very Slow':'Very Slow %', 
+           'Slow':'Slow %', 
+           'Medium':'Medium %', 
+           'Medium Slow':'Medium Slow %', 
+           'Medium Fast':'Medium Fast %', 
+           'Fast':'Fast %', 
+           'Very Fast':'Very Fast %',
+           'Carpet':'Carpet %', 
+           'Clay':'Clay %', 
+           'Grass':'Grass %', 
+           'Indoor':'Indoor %', 
+           'Outdoor':'Outdoor %', 
+           'Hard':'Hard %',
+          }
+df.rename(columns=to_rename, inplace=True)
+
+# Take all % columns and convert % in number between 0 and 1
+percentage_cols = [col for col in df.columns if '%' in col]
+for col in percentage_cols:
+    df[col] = df[col].str.rstrip('%').astype('float') / 100.0
+
 # Get rid off retired players
-df.rename(columns={'Current Rank' : 'Ranking'}, inplace=True)
-df = df[df.Ranking != 0]
+df = df[np.isfinite(df['Current Rank'])]
 
 # Sort rows by ranking and reset index
-df.sort_values(by=['Ranking'], inplace = True)
+df.sort_values(by=['Current Rank'], inplace = True)
+
+# Rearrange names in the same way that matches_data.csv
+df['First Name'] = df['First Name'].astype(str).str[0] + '.'
+df['Name']= df['Last Name'] + ' ' + df['First Name']
+df.drop(columns=['First Name', 'Last Name'], inplace=True)
+cols = df.columns.tolist()
+cols = cols[-1:] + cols[:-1]
+df = df[cols]
+
+# Count the number of NaN in a column
+for col in df:
+    num_nan = df.loc[(pd.isna(df[col])), col].shape[0]
+    print(f"There are {num_nan} NaNs in column {col}")
+
+# Drop columns with too many NaN
+to_drop = ['Alt. Finals',
+           'Round-Robin',
+           'Titles',
+           'Best Season',
+           'Last Appearance',
+           'Win %',
+           'Grand Slams',
+           'Best of 5: 0:0 %',
+           'Best of 5: 0:1 %',
+           'Best of 5: 0:2 %',
+           'Best of 5: 0:4 %',
+           'Best of 5: 1:0 %',
+           'Best of 5: 1:2 %',
+           'Best of 5: 1:4 %',
+           'Best of 5: 2:0 %',
+           'Best of 5: 2:1 %',
+           'Best of 5: 2:2 %',
+           'Deciding Set Tie Breaks',
+           'H2H %',
+           'Tour Finals %',
+           'Carpet %',
+           'Grass %',
+           'Very Slow %',
+           'Slow %',
+           'Medium %',
+           'Medium Slow %',
+           'Medium Fast %',
+           'Fast %',
+           'Very Fast %',
+           'Indoor %',
+           'Hard %',
+           'Tie Breaks',
+           'Best of 5 %',
+           'Best of 5: 0:3 %',
+           'Best of 5: 1:3 %',
+           'Fifth Set %'
+          ]
+df.drop(columns=to_drop, inplace=True)
+
+# Drop rows with too many missing values
+df = df[np.isfinite(df['Points per Set'])]
+
+# Reset the indexes
 df.reset_index(drop=True, inplace=True)
 
+# Replace NaN values
+df['Favorite Surface'].fillna('None', inplace=True)
+df.fillna(0, inplace=True)
+
 # Export to csv
-df.to_csv('players_data.csv', sep=',', encoding='utf-8')
+df.to_csv('players_data.csv', sep=',', encoding='utf-8', float_format='%.3f', decimal='.')

@@ -2,9 +2,8 @@ import pandas as pd
 import numpy as np
 
 
-
 # Read the excel file containing 50.000 matches from 2000 to 2018
-df = pd.read_excel('2000-2018.xls')
+df = pd.read_excel('Original_data/2000-2018.xls')
 
 # Replace all NaN with 0
 df.fillna(0, inplace=True)
@@ -47,4 +46,4 @@ cols = cols[-2:] + cols[:-2]
 df = df[cols]
 
 # Export to csv
-df.to_csv('2000_2018_cleaned.csv', sep=',', encoding='utf-8')
+df.to_csv('2000_2018_cleaned.csv', sep=',', encoding='utf-8', float_format='%.0f')
