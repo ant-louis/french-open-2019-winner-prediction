@@ -1,6 +1,7 @@
 import glob, os
 import pandas as pd
 import numpy as np
+import math
 
 
 # Concatenate all csv files in one
@@ -10,38 +11,28 @@ files_df = (pd.read_csv(file, header=0) for file in all_files)
 df = pd.concat(files_df, ignore_index=True)
 
 # Drop useless columns
-to_drop = ['Active',
-          'Backhand',
-          'Best of 3', 'Best of 3: 0:0', 'Best of 3: 0:1', 'Best of 3: 0:2', 'Best of 3: 0:3', 'Best of 3: 1:0', 'Best of 3: 1:1', 'Best of 3: 1:2', 'Best of 3: 1:3', 'Best of 3: 2:0', 'Best of 3: 2:1', 'Best of 3: 2:3', 'Best of 3: 3:0', 'Best of 3: 3:1', 'Best of 3: 3:2',
+to_drop = ['Best of 3', 'Best of 3: 0:0', 'Best of 3: 0:1', 'Best of 3: 0:2', 'Best of 3: 0:3', 'Best of 3: 1:0', 'Best of 3: 1:1', 'Best of 3: 1:2', 'Best of 3: 1:3', 'Best of 3: 2:0', 'Best of 3: 2:1', 'Best of 3: 2:3', 'Best of 3: 3:0', 'Best of 3: 3:1', 'Best of 3: 3:2',
           'Birthplace',
           'Bronze Medal',
-          'Coach',
           'Current Elo Rank',
           'Davis Cup',
           'Facebook',
           'For Bronze Medal',
           'GOAT Rank',
-           'Height',
           'Nicknames',
           'Olympics',
           'Opponent Elo Rating',
           'Peak Elo Rating',
-          'Plays',
-          'Prize Money',
           'Residence',
-          'Retired',
-           'Turned Pro',
           'Twitter',
           'Web Site',
-          'Weeks at No. 1',
-          'Weight',
           'Wikipedia',
           'World Team Cup']
 df.drop(columns=to_drop, inplace=True)
 
 # Reorder columns
-cols = ['First Name', 'Last Name', 'Country', 'Current Rank', 'Age',
-'Favorite Surface', 'Best Rank', 'Best Season', 'Last Appearance', 'Seasons', 'Win',
+cols = ['First Name', 'Last Name', 'Country', 'Current Rank', 'Age', 'Active', 'Backhand', 'Coach', 'Height', 'Weight', 'Retired',
+'Favorite Surface', 'Best Rank', 'Best Season', 'Last Appearance', 'Seasons', 'Win', 'Weeks at No. 1', 'Plays', 'Prize Money', 'Turned Pro',
 'ATP 250', 'ATP 500', 'Masters', 'Tour Finals', 'Grand Slam', 'Grand Slams',
 'Round of 128', 'Round of 64', 'Round of 32', 'Round of 16', 'Quarter-Final', 'Semi-Final', 'Final',
 'Vs No. 1', 'Vs Top 5', 'Vs Top 10', 'Vs Top 20', 'Vs Top 50', 'Vs Top 100',
@@ -118,9 +109,6 @@ percentage_cols = [col for col in df.columns if '%' in col]
 for col in percentage_cols:
     df[col] = df[col].str.rstrip('%').astype('float') / 100.0
 
-# Get rid off retired players
-df = df[np.isfinite(df['Current Rank'])]
-
 # Sort rows by ranking and reset index
 df.sort_values(by=['Current Rank'], inplace = True)
 
@@ -131,11 +119,6 @@ df.drop(columns=['First Name', 'Last Name'], inplace=True)
 cols = df.columns.tolist()
 cols = cols[-1:] + cols[:-1]
 df = df[cols]
-
-# Count the number of NaN in a column
-for col in df:
-    num_nan = df.loc[(pd.isna(df[col])), col].shape[0]
-    print(f"There are {num_nan} NaNs in column {col}")
 
 # Drop columns with too many NaN
 to_drop = ['Alt. Finals',
@@ -173,19 +156,38 @@ to_drop = ['Alt. Finals',
            'Best of 5 %',
            'Best of 5: 0:3 %',
            'Best of 5: 1:3 %',
-           'Fifth Set %'
+           'Fifth Set %',
+           'Coach',
+           'Weight',
+           'Height',
+           'Backhand',
+           'Turned Pro',
+           'Prize Money'
           ]
 df.drop(columns=to_drop, inplace=True)
 
+# Replace NaN values
+df['Favorite Surface'].fillna('None', inplace=True)
+df['Active'].fillna('No', inplace=True)
+
 # Drop rows with too many missing values
-df = df[np.isfinite(df['Points per Set'])]
+df = df[np.isfinite(df['Points per Match'])]
+
+# Count the remaining NaNs in a column
+for col in df:
+    num_nan = df.loc[(pd.isna(df[col])), col].shape[0]
+    print(f"There are {num_nan} NaNs in column {col}")
+
+# Get rid off players retired before 2000
+cond1 = df['Retired'] > 2000.0
+cond2 = np.isfinite(df['Current Rank'])
+df = df[cond1 | cond2]
+
+# Fill remaining NaN values with o's
+df.fillna(0, inplace=True)
 
 # Reset the indexes
 df.reset_index(drop=True, inplace=True)
-
-# Replace NaN values
-df['Favorite Surface'].fillna('None', inplace=True)
-df.fillna(0, inplace=True)
 
 # Export to csv
 df.to_csv('cleaned_players_data.csv', sep=',', encoding='utf-8', float_format='%.3f', decimal='.')

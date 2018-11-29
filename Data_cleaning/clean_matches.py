@@ -9,7 +9,7 @@ df = pd.read_excel('Original_data/2000-2018.xls')
 df.fillna(0, inplace=True)
 
 # Drop useless columns
-to_drop = ['ATP', 'Location', 'Tournament']
+to_drop = ['ATP', 'Location']
 df.drop(columns=to_drop, inplace=True)
 
 # Rename columns with clearer names

@@ -29,6 +29,7 @@ logger.addHandler(handler)
 
 try:
     for playerID in range(low,up):
+
         print(playerID)
         """
         Getting profile information
@@ -54,11 +55,11 @@ try:
                 info[th.text] = [td.text.strip().split(" ")[0]] #Values are lists to simplify dataframe building 
 
         #Checking current rank, disregarding if higher than 500
-        if "Current Rank" not in info:
+        if "Best Rank" not in info:
             logger.info("Dropping cause no rank")
             browser.close()
             continue
-        elif int(info['Current Rank'][0].split(" ")[0]) > 500:
+        if int(info['Best Rank'][0].split(" ")[0]) > 400:
             logger.info("Dropping cause low current rank")
             browser.close()
             continue
@@ -96,7 +97,7 @@ try:
 
         #Write into dataframe and export to csv using playerID as filename
         df = pd.DataFrame(info)
-        df.to_csv("scrapedPlayerInfo/{}.csv".format(playerID), index=False)
+        df.to_csv("scrapedBestRankGreater400/{}.csv".format(playerID), index=False)
 except:
     print("An error occured")
     logger.info("An error occured")
