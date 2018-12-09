@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import random
 
 pred = {}
@@ -13,22 +14,22 @@ def gagner(tab):
     return predict(gagner(tab1), gagner(tab2))
 
 def predict(a, b):
-    if(random.randint(1,3) == 1):
-        return a
+    if(a<b):
+        return pred[(a,b)]
     else:
-        return b
+        return pred[(b,a)]
 
-
+def load(filename):
+    return pd.read_csv(filename, header = 0)
 
 if __name__ == '__main__':
     nb_iter = 10000
 
-    #A changer avec les tableaux pris sur MongoDB
-    players1 = [1,2,3,4]
-    players2 = [4,5,6,11]
-    match_result = [7,8,9,12]
-
-    tab = [1,2,3,4]
+    tableau = np.array(load("matches.csv"))
+    
+    players1 = tableau[:,0]
+    players2 = tableau[:,1]
+    match_result = tableau[:,2]
 
     results = np.zeros(len(players1))
 
@@ -36,6 +37,7 @@ if __name__ == '__main__':
         pred[(players1[i],players2[i])] = match_result[i]
 
     for i in range(nb_iter):
+        tab = [1,2,3,4]
         random.shuffle(tab)
         #tab = generateRandomGrid()
         results[gagner(tab)-1] += 1
@@ -43,3 +45,4 @@ if __name__ == '__main__':
     results /= results.sum()
     print(results)
     print( np.argmax(results) + 1)
+    
