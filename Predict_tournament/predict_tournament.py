@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import random
-from Draws.generate_draws import Draws
+from generate_draws import Draws
 
 class TournamentPredictor:
 
@@ -52,6 +52,9 @@ class TournamentPredictor:
         R: int
             The rank of the winner of game
         """
+        if(self.pred_ditctionary.get((a,b),True)):
+            print("Not in Deictionary")
+            exit()
         if(a<b):
             return self.pred_ditctionary[(a,b)]
         else:
