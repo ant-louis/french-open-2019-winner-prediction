@@ -89,7 +89,7 @@ def create_estimator():
     print("Most important features")
     print(feature_importances[:100])
     feature_importances[:100].to_csv("feature_importance.csv")
-    
+  
     y_pred = model.predict(X_test)
     print("Test set accuracy: {}".format(accuracy_score(y_test, y_pred)))
     print("=================================================================")
@@ -98,7 +98,12 @@ def create_estimator():
     print("Training set accuracy: {}".format(accuracy_score(y_train, y_pred)))
     print("=================================================================")
 
+    print("Features importance")
+    print(feature_importances[:100])
 
 
 if __name__ == "__main__":
+
     create_estimator()
+
+   
