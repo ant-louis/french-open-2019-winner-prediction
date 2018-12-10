@@ -68,15 +68,12 @@ def create_estimator():
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # Perform cross validation
-    # cv_results=[]
-    # depths = list(range(1,X.shape[1],5))
-    # for depth in depths:
     print("Training...getting most important features")
 
     with measure_time('Training...getting most important features'):
-        model = RandomForestClassifier(n_estimators=100,max_depth=3, bootstrap=True,n_jobs=-1)
+        model = RandomForestClassifier(n_estimators=1000,max_depth=3, bootstrap=True,n_jobs=-1, random_state=42)
         model.fit(X_train,y_train)
+        joblib.dump(model, "estimators/RandomForest_depth3.pkl") 
 
     feature_importances = pd.DataFrame(model.feature_importances_,
                                         index = train_features,
@@ -89,13 +86,12 @@ def create_estimator():
     y_pred = model.predict(X_train)
     print("Training set accuracy: {}".format(accuracy_score(y_train, y_pred)))
     print("=================================================================")
-    # X_selected = df[most_imp_features].values.squeeze()
 
     return feature_importances[:100]
 
 
-
 if __name__ == "__main__":
+
     # Parameters
     feature_importances = create_estimator()
 
