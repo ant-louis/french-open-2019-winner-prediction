@@ -60,7 +60,7 @@ def load_from_csv(path, delimiter=','):
 def create_estimator():
 
     model = None
-    filename = "estimators/RandomForest_depth3.pkl"
+    filename = "RandomForest_depth3.pkl"
     if(os.path.isfile(filename)):
         model = joblib.load(filename)
     else:
