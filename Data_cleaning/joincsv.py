@@ -51,7 +51,7 @@ to_swapB = ['PlayerB',
             'Games won by PlayerB in set 5',
             'PlayerB sets'
              ]
-index = matches.sample(frac=0.5).index
+index = matches.sample(frac=0.5,random_state=42).index
 tmp = matches.loc[index,to_swapA].values
 matches.loc[index,to_swapA] = matches.loc[index,to_swapB].values
 matches.loc[index,to_swapB] = tmp
@@ -95,7 +95,9 @@ cols.pop(cols.index('ID_PlayerB'))
 cols.pop(cols.index('PlayerA Win')) 
 players_and_matches = players_and_matches[['ID_PlayerA', 'ID_PlayerB', 'PlayerA', 'PlayerB'] + cols + ['PlayerA Win']] #Create new dataframe with columns in the order you want
 
-players_and_matches.sort_values('ID_PlayerA',inplace=True)
+#Convert ID's to numeric values and sort them
+players_and_matches[['ID_PlayerA','ID_PlayerB']] = players_and_matches[['ID_PlayerA','ID_PlayerB']].apply(pd.to_numeric)
+players_and_matches.sort_values(by = ['ID_PlayerA','ID_PlayerB'],inplace=True)
 
 #Write to csv
 players_and_matches.to_csv("merged_matches_players.csv", index=False)
