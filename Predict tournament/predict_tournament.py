@@ -1,48 +1,92 @@
 import numpy as np
 import pandas as pd
 import random
+from Draws.generate_draws import Draws
 
-pred = {}
+class TournamentPredictor:
 
-def gagner(tab):
-    if(len(tab) == 1):
-        return tab[0]
+    def __init__(self):
+        """
+        Initialize the prdictionary with the prediction of wonners in matches.csv
+        """
+        self.pred_ditctionary = {}
+        file_predict = np.array(pd.read_csv("matches.csv", header = 0))
+        for i in range(len(file_predict[:,0])):
+            self.pred_ditctionary[(file_predict[i,0],file_predict[i,1])] = file_predict[i,2]
+
+    def winner(self, draw):
+        """
+        Return the winner of one draw
+
+        Parameters
+        ----------
+        draw: array
+            An array of the rank of players corresponding to one
+            particular draw
+
+        Return
+        ------
+        W: int
+            The rank of the winner of the draw
+        """
+        if(len(draw) == 1):
+            return draw[0]
+        q = int(len(draw)/2)
+        draw1 = draw[0:q]
+        draw2 = draw[q:]
+        return self.predict_match(self.winner(draw1), self.winner(draw2))
+
+    def predict_match(self, a, b):
+        """
+        Predict the winner of a match
+
+        Parameters
+        ----------
+        a: int
+            The rank of the first player
+        b: int
+            The rank of the second player
+
+        Return
+        ------
+        R: int
+            The rank of the winner of game
+        """
+        if(a<b):
+            return self.pred_ditctionary[(a,b)]
+        else:
+            return self.pred_ditctionary[(b,a)]
     
-    q = int(len(tab)/2)
-    tab1 = tab[0:q]
-    tab2 = tab[q:]
-    return predict(gagner(tab1), gagner(tab2))
+    def predict(self, nb_draws):
+        """
+        Return the probability for all players to win the tournament
 
-def predict(a, b):
-    if(a<b):
-        return pred[(a,b)]
-    else:
-        return pred[(b,a)]
+        Parameters
+        ----------
+        nb_draws: int
+            The number of prediction to make
 
-def load(filename):
-    return pd.read_csv(filename, header = 0)
+        Return
+        ------
+        R: array
+            An array of probabilities for each player to win
+            the tournament
+        """
+        results = np.zeros(len(self.pred_ditctionary))
+
+        draw_generate = Draws()
+        draws = draw_generate.generate_draws(nb_draws)
+
+        for draw in draws:
+            results[self.winner(draw)-1] += 1
+        results /= results.sum()
+        return results
+
 
 if __name__ == '__main__':
-    nb_iter = 10000
-
-    tableau = np.array(load("matches.csv"))
-    
-    players1 = tableau[:,0]
-    players2 = tableau[:,1]
-    match_result = tableau[:,2]
-
-    results = np.zeros(len(players1))
-
-    for i in range(len(players1)):
-        pred[(players1[i],players2[i])] = match_result[i]
-
-    for i in range(nb_iter):
-        tab = [1,2,3,4]
-        random.shuffle(tab)
-        #tab = generateRandomGrid()
-        results[gagner(tab)-1] += 1
-    
-    results /= results.sum()
+    predicator = TournamentPredictor()
+    results = predicator.predict(10000)
     print(results)
     print( np.argmax(results) + 1)
+    
     
