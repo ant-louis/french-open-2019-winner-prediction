@@ -1,7 +1,11 @@
 import pandas as pd 
+import os
 
-matches = pd.read_csv('cleaned_matches_data.csv', dtype=object, encoding='utf-8')
-players = pd.read_csv('cleaned_players_data.csv', dtype=object, encoding='utf-8')
+prefix = '/home/tom/Documents/Master1_DataScience/1er QUADRI/Big-Data-Project/Data_cleaning/'
+
+matches = pd.read_csv(os.path.join(prefix,'cleaned_matches_data.csv'), dtype=object, encoding='utf-8')
+players = pd.read_csv(os.path.join(prefix,'cleaned_players_data.csv'), dtype=object, encoding='utf-8')
+#--------------------------------MATCHES ---------------------------------------------------------#
 
 #Rename index as ID
 players.rename(columns={players.columns[0]:"ID"}, inplace=True)
@@ -9,7 +13,8 @@ players.rename(columns={players.columns[0]:"ID"}, inplace=True)
 #Drop index column an match features, as we will not have them
 #when predicting the winner
 #Drop non numeric columns
-to_drop_matches = ['Games won by winner in set 1' ,
+to_drop_matches = [
+                  'Games won by winner in set 1' ,
                   'Games won by loser in set 1' ,
                   'Games won by winner in set 2' ,
                   'Games won by loser in set 2' ,
@@ -24,11 +29,11 @@ to_drop_matches = ['Games won by winner in set 1' ,
                   'Tournament',
                   'Completed or retired',
                   'Month',
-                  'Year'
+                  'Year',
+                  'Round',
+                  'Country'
                   ]
-to_drop_players = ['Active','Retired']
-
-players.drop(columns=to_drop_players, inplace=True)
+                  
 matches.drop(columns=to_drop_matches, inplace=True)
 matches.drop(matches.columns[0], axis=1, inplace=True)
 
@@ -36,15 +41,6 @@ matches.drop(matches.columns[0], axis=1, inplace=True)
 matches.replace(to_replace='NR',value=0,inplace=True)
 matches.replace(to_replace=' ',value=0,inplace=True)
 matches.replace(to_replace='`1',value=0,inplace=True)
-players.replace(to_replace='Infinity',value=100,inplace=True)
-
-# Split the match time
-players["Match Time"] = players["Match Time"].astype(str).str.split(":").apply(lambda x: int(x[0]) * 60 + int(x[1]))
-players.rename(columns={"Match Time":"Match Time Average"}, inplace=True)
-
-# Remove percentages
-players['After Losing 1st Set'] = players['After Losing 1st Set'].str.rstrip('%').astype('float') / 100.0
-players['After Winning 1st Set'] = players['After Winning 1st Set'].str.rstrip('%').astype('float') / 100.0
 
 
 #Rename winner and loser to player A and B
@@ -70,25 +66,42 @@ matches.loc[index,'PlayerA Win'] = 0
 
 
 #One hot encoding because Decision tree work with valuesnot strings
-hot_encode_player = ['Plays', 'Favorite Surface','Country']
-
-hot_encode_matches = ['Country',
-                      'Court',
+ 
+hot_encode_matches = ['Court',
                       'Series',
                       'Surface',
-                      'Round'                     
                     ]
-players = pd.get_dummies(players, columns = hot_encode_player) 
 matches = pd.get_dummies(matches, columns = hot_encode_matches) 
 
 
+
+#-------------------------------------------PLAYERS-------------------------#
+to_drop_players = ['Active','Retired','Country']
+
+players.drop(columns=to_drop_players, inplace=True)
+#Reclean invalid values that are not numeric in a given column
+players.replace(to_replace='Infinity',value=100,inplace=True)
+
+# Split the match time
+players["Match Time"] = players["Match Time"].astype(str).str.split(":").apply(lambda x: int(x[0]) * 60 + int(x[1]))
+players.rename(columns={"Match Time":"Match Time Average"}, inplace=True)
+
+# Remove percentages
+players['After Losing 1st Set'] = players['After Losing 1st Set'].str.rstrip('%').astype('float') / 100.0
+players['After Winning 1st Set'] = players['After Winning 1st Set'].str.rstrip('%').astype('float') / 100.0
+
+hot_encode_player = ['Plays', 'Favorite Surface']
+players = pd.get_dummies(players, columns = hot_encode_player)
+
+
+#-------------------------------------------MERGING----------------------------------------------------------------------------------------------------#
 #Merge players and matches, adding suffixes if necessary
 players_and_matches = pd.merge(matches,players,left_on="PlayerA",right_on="Name",suffixes=['_Match','_PlayerA'])
 players_and_matches = pd.merge(players_and_matches,players,left_on="PlayerB",right_on="Name",suffixes=['_PlayerA','_PlayerB'])
 
 
 #Drop columns from merged
-todrop_merged = ['Name_PlayerA', 'Name_PlayerB', 'PlayerA','PlayerB']
+todrop_merged = ['Name_PlayerA', 'Name_PlayerB', 'PlayerA', 'PlayerB']
 players_and_matches.drop(columns=todrop_merged,inplace=True)
 
 
@@ -99,10 +112,13 @@ cols.pop(cols.index('ID_PlayerB'))
 cols.pop(cols.index('PlayerA Win')) 
 players_and_matches = players_and_matches[['ID_PlayerA', 'ID_PlayerB'] + cols + ['PlayerA Win']] #Create new dataframe with columns in the order you want
 
-
 #Convert ID's to numeric values and sort them
 players_and_matches = players_and_matches.apply(pd.to_numeric)
 players_and_matches.sort_values(by = ['ID_PlayerA','ID_PlayerB'],inplace=True)
 
+
+
 #Write to csv
-players_and_matches.to_csv("merged_matches_players.csv", index=False)
+players_and_matches.to_csv(os.path.join(prefix,"training_matches_players.csv"), index=False)
+matches.to_csv(os.path.join(prefix,"training_matches.csv"), index=False)
+players.to_csv(os.path.join(prefix,"training_players.csv"), index=False)

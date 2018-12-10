@@ -59,20 +59,22 @@ def load_from_csv(path, delimiter=','):
 
 def create_estimator():
 
+    # Loading data
+    prefix = '/home/tom/Documents/Master1_DataScience/1er QUADRI/Big-Data-Project/Data_cleaning/'
+    df = load_from_csv(os.path.join(prefix, 'training_matches_players.csv'))
+
+    y = df['PlayerA Win'].values.squeeze()
+    train_features = df.drop(columns=['PlayerA Win']).columns
+    X = df.drop(columns=['PlayerA Win']).values.squeeze()  
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
     model = None
     filename = "RandomForest_depth3.pkl"
     if(os.path.isfile(filename)):
         model = joblib.load(filename)
     else:
-        # Loading data
-        prefix = '/home/tom/Documents/Master1_DataScience/1er QUADRI/Big-Data-Project/Data_cleaning/'
-        df = load_from_csv(os.path.join(prefix, 'merged_matches_players.csv'))
 
-        y = df['PlayerA Win'].values.squeeze()
-        train_features = df.drop(columns=['PlayerA Win']).columns
-        X = df.drop(columns=['PlayerA Win']).values.squeeze()  
-
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         
         #Training
         print("Training... getting most important features")
@@ -80,7 +82,7 @@ def create_estimator():
         with measure_time('Training...getting most important features'):
             model = RandomForestClassifier(n_estimators=1000,max_depth=3, bootstrap=True,n_jobs=-1, random_state=42)
             model.fit(X_train,y_train)
-            joblib.dump(model, "estimators/RandomForest_depth3.pkl") 
+            joblib.dump(model, filename) 
 
     feature_importances = pd.DataFrame(model.feature_importances_,
                                         index = train_features,
@@ -97,9 +99,6 @@ def create_estimator():
     y_pred = model.predict(X_train)
     print("Training set accuracy: {}".format(accuracy_score(y_train, y_pred)))
     print("=================================================================")
-
-    print("Features importance")
-    print(feature_importances[:100])
 
 
 if __name__ == "__main__":
