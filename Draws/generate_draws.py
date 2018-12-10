@@ -9,7 +9,6 @@ class Draws:
     def __init__(self):
         self.seeds_1_8_with_seeds_25_32, self.seeds_9_16_with_seeds_17_24 = self.__generate_all_draws()
 
-
     def __generate_all_draws(self):
         # Starting point of the draws
         seeds_1_to_8 = [
@@ -66,7 +65,6 @@ class Draws:
         
         return seeds_1_8_with_25_32, seeds_9_16_with_17_24
 
-
     def generate_draws(self, nb_draws):
         draws = []
 
@@ -86,4 +84,6 @@ if __name__ == "__main__":
 
     x = Draws()
     draws = x.generate_draws(10)
-    print(draws)
+
+    for draw in draws:
+        print(draw)
