@@ -1,48 +1,92 @@
 import numpy as np
 import pandas as pd
 import random
-from generate_draws import Draws
+from Draws.generate_draws import Draws
 
 class TournamentPredictor:
 
     def __init__(self):
-        self.pred = {}
+        """
+        Initialize the prdictionary with the prediction of wonners in matches.csv
+        """
+        self.pred_ditctionary = {}
         file_predict = np.array(pd.read_csv("matches.csv", header = 0))
-        players1 = file_predict[:,0]
-        players2 = file_predict[:,1]
-        match_result = file_predict[:,2]
-        for i in range(len(players1)):
-            self.pred[(players1[i],players2[i])] = match_result[i]
+        for i in range(len(file_predict[:,0])):
+            self.pred_ditctionary[(file_predict[i,0],file_predict[i,1])] = file_predict[i,2]
 
-    def gagner(self, draw):
+    def winner(self, draw):
+        """
+        Return the winner of one draw
+
+        Parameters
+        ----------
+        draw: array
+            An array of the rank of players corresponding to one
+            particular draw
+
+        Return
+        ------
+        W: int
+            The rank of the winner of the draw
+        """
         if(len(draw) == 1):
             return draw[0]
         q = int(len(draw)/2)
         draw1 = draw[0:q]
         draw2 = draw[q:]
-        return self.predict(self.gagner(draw1), self.gagner(draw2))
+        return self.predict_match(self.winner(draw1), self.winner(draw2))
 
-    def predict(self, a, b):
+    def predict_match(self, a, b):
+        """
+        Predict the winner of a match
+
+        Parameters
+        ----------
+        a: int
+            The rank of the first player
+        b: int
+            The rank of the second player
+
+        Return
+        ------
+        R: int
+            The rank of the winner of game
+        """
         if(a<b):
-            return self.pred[(a,b)]
+            return self.pred_ditctionary[(a,b)]
         else:
-            return self.pred[(b,a)]
+            return self.pred_ditctionary[(b,a)]
     
-    def predict(self):
-        nb_iter = 10000
-        results = np.zeros(len(self.pred))
+    def predict(self, nb_draws):
+        """
+        Return the probability for all players to win the tournament
+
+        Parameters
+        ----------
+        nb_draws: int
+            The number of prediction to make
+
+        Return
+        ------
+        R: array
+            An array of probabilities for each player to win
+            the tournament
+        """
+        results = np.zeros(len(self.pred_ditctionary))
 
         draw_generate = Draws()
-        draws = draw_generate.generate_draws(nb_iter)
+        draws = draw_generate.generate_draws(nb_draws)
 
         for draw in draws:
-            results[self.gagner(draw)-1] += 1
+            results[self.winner(draw)-1] += 1
         results /= results.sum()
         return results
 
+
 if __name__ == '__main__':
     predicator = TournamentPredictor()
-    results = predicator.predict()
+    results = predicator.predict(10000)
     print(results)
     print( np.argmax(results) + 1)
+    
     
