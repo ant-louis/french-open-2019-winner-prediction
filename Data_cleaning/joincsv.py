@@ -1,8 +1,10 @@
 import pandas as pd 
 import os
 
-matches = pd.read_csv('cleaned_matches_data.csv', dtype=object, encoding='utf-8')
-players = pd.read_csv('cleaned_players_data.csv', dtype=object, encoding='utf-8')
+prefix = '/home/tom/Documents/Master1_DataScience/1er QUADRI/Big-Data-Project/Data_cleaning/'
+
+matches = pd.read_csv(os.path.join(prefix,'cleaned_matches_data.csv'), dtype=object, encoding='utf-8')
+players = pd.read_csv(os.path.join(prefix,'cleaned_players_data.csv'), dtype=object, encoding='utf-8')
 #--------------------------------MATCHES ---------------------------------------------------------#
 
 #Rename index as ID
@@ -28,7 +30,8 @@ to_drop_matches = [
                   'Completed or retired',
                   'Month',
                   'Year',
-                  'Round'
+                  'Round',
+                  'Country'
                   ]
                   
 matches.drop(columns=to_drop_matches, inplace=True)
@@ -64,8 +67,7 @@ matches.loc[index,'PlayerA Win'] = 0
 
 #One hot encoding because Decision tree work with valuesnot strings
  
-hot_encode_matches = ['Country',
-                      'Court',
+hot_encode_matches = ['Court',
                       'Series',
                       'Surface',
                     ]
@@ -74,7 +76,7 @@ matches = pd.get_dummies(matches, columns = hot_encode_matches)
 
 
 #-------------------------------------------PLAYERS-------------------------#
-to_drop_players = ['Active','Retired']
+to_drop_players = ['Active','Retired','Country']
 
 players.drop(columns=to_drop_players, inplace=True)
 #Reclean invalid values that are not numeric in a given column
@@ -88,7 +90,7 @@ players.rename(columns={"Match Time":"Match Time Average"}, inplace=True)
 players['After Losing 1st Set'] = players['After Losing 1st Set'].str.rstrip('%').astype('float') / 100.0
 players['After Winning 1st Set'] = players['After Winning 1st Set'].str.rstrip('%').astype('float') / 100.0
 
-hot_encode_player = ['Plays', 'Favorite Surface','Country']
+hot_encode_player = ['Plays', 'Favorite Surface']
 players = pd.get_dummies(players, columns = hot_encode_player)
 
 
@@ -99,7 +101,7 @@ players_and_matches = pd.merge(players_and_matches,players,left_on="PlayerB",rig
 
 
 #Drop columns from merged
-todrop_merged = ['Name_PlayerA', 'Name_PlayerB', 'PlayerA','PlayerB','Country_0']
+todrop_merged = ['Name_PlayerA', 'Name_PlayerB', 'PlayerA', 'PlayerB']
 players_and_matches.drop(columns=todrop_merged,inplace=True)
 
 
@@ -117,6 +119,6 @@ players_and_matches.sort_values(by = ['ID_PlayerA','ID_PlayerB'],inplace=True)
 
 
 #Write to csv
-players_and_matches.to_csv("training_matches_players.csv", index=False)
-matches.to_csv("training_matches.csv", index=False)
-players.to_csv("training_players.csv", index=False)
+players_and_matches.to_csv(os.path.join(prefix,"training_matches_players.csv"), index=False)
+matches.to_csv(os.path.join(prefix,"training_matches.csv"), index=False)
+players.to_csv(os.path.join(prefix,"training_players.csv"), index=False)
