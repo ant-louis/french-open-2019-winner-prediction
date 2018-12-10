@@ -87,12 +87,12 @@ def create_estimator():
     print("Training set accuracy: {}".format(accuracy_score(y_train, y_pred)))
     print("=================================================================")
 
-    return feature_importances[:100]
+    print("Features importance")
+    print(feature_importances[:100])
 
 
 if __name__ == "__main__":
 
-    # Parameters
-    feature_importances = create_estimator()
+    create_estimator()
 
-    print(feature_importances)
+   
