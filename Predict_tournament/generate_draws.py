@@ -82,7 +82,6 @@ class Draws:
         return draws
 
 if __name__ == "__main__":
-
     x = Draws()
     draws = x.generate_draws(10)
 

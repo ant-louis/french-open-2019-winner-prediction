@@ -68,8 +68,6 @@ def create_estimator():
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    
-
     # Perform cross validation
     # cv_results=[]
     # depths = list(range(1,X.shape[1],5))
@@ -83,9 +81,6 @@ def create_estimator():
     feature_importances = pd.DataFrame(model.feature_importances_,
                                         index = train_features,
                                         columns=['importance']).sort_values('importance',ascending=False)
-
-    print(feature_importances[:100])
-    most_imp_features = feature_importances[:100].axes[0].tolist()
     
     y_pred = model.predict(X_test)
     print("Test set accuracy: {}".format(accuracy_score(y_test, y_pred)))
@@ -96,8 +91,12 @@ def create_estimator():
     print("=================================================================")
     # X_selected = df[most_imp_features].values.squeeze()
 
+    return feature_importances[:100]
+
 
 
 if __name__ == "__main__":
     # Parameters
-    create_estimator()
+    feature_importances = create_estimator()
+
+    print(feature_importances)
