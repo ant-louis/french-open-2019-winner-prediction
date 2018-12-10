@@ -7,6 +7,20 @@ players = pd.read_csv('cleaned_players_data.csv', dtype=object, encoding='utf-8'
 players.rename(columns={players.columns[0]:"ID"}, inplace=True)
 #Drop index column
 matches.drop(matches.columns[0], axis=1, inplace=True)
+matches.replace(to_replace='NR',value=0,inplace=True)
+matches.replace(to_replace=' ',value=0,inplace=True)
+matches.replace(to_replace='`1',value=0,inplace=True)
+players.replace(to_replace='Infinity',value=100,inplace=True)
+
+# Split the match time
+players["Match Time"] = players["Match Time"].astype(str).str.split(":", n = 2, expand = True).apply(lambda x: int(x[0]) * 60 + int(x[1]))
+
+players.rename(columns={"Match Time":"Match Time Average"}, inplace=True)
+
+# Remove percentages
+players['After Losing 1st Set'] = players['After Losing 1st Set'].str.rstrip('%').astype('float') / 100.0
+players['After Winning 1st Set'] = players['After Winning 1st Set'].str.rstrip('%').astype('float') / 100.0
+
 
 #Rename winner and loser to player A and B
 to_rename={'Winner':'PlayerA',
@@ -83,20 +97,18 @@ players_and_matches = pd.merge(matches,players,left_on="PlayerA",right_on="Name"
 players_and_matches = pd.merge(players_and_matches,players,left_on="PlayerB",right_on="Name",suffixes=['_PlayerA','_PlayerB'])
 
 #Drop columns from merged
-todrop_merged = ['Name_PlayerA', 'Name_PlayerB']
+todrop_merged = ['Name_PlayerA', 'Name_PlayerB', 'PlayerA','PlayerB']
 players_and_matches.drop(columns=todrop_merged,inplace=True)
 
 #Move player columns to the front
-cols = list(players_and_matches.columns.values) #Make a list of all of the columns in the df
-cols.pop(cols.index('PlayerA')) 
-cols.pop(cols.index('PlayerB')) 
+cols = list(players_and_matches.columns.values)
 cols.pop(cols.index('ID_PlayerA')) 
 cols.pop(cols.index('ID_PlayerB')) 
 cols.pop(cols.index('PlayerA Win')) 
-players_and_matches = players_and_matches[['ID_PlayerA', 'ID_PlayerB', 'PlayerA', 'PlayerB'] + cols + ['PlayerA Win']] #Create new dataframe with columns in the order you want
+players_and_matches = players_and_matches[['ID_PlayerA', 'ID_PlayerB'] + cols + ['PlayerA Win']] #Create new dataframe with columns in the order you want
 
 #Convert ID's to numeric values and sort them
-players_and_matches[['ID_PlayerA','ID_PlayerB']] = players_and_matches[['ID_PlayerA','ID_PlayerB']].apply(pd.to_numeric)
+players_and_matches = players_and_matches.apply(pd.to_numeric)
 players_and_matches.sort_values(by = ['ID_PlayerA','ID_PlayerB'],inplace=True)
 
 #Write to csv
