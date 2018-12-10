@@ -22,7 +22,9 @@ to_drop_matches = ['Games won by winner in set 1' ,
                   'Winner sets',
                   'Loser sets',
                   'Tournament',
-                  'Completed or retired'
+                  'Completed or retired',
+                  'Month',
+                  'Year'
                   ]
 to_drop_players = ['Active','Retired']
 
