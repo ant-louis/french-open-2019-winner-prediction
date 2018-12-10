@@ -75,8 +75,9 @@ class Draws:
             draw1 = self.seeds_1_8_with_seeds_25_32[random1]
             draw2 = self.seeds_9_16_with_seeds_17_24[random2]
 
-            new_draw = [x for x in itertools.chain.from_iterable(itertools.izip_longest(draw1,draw2)) if x]
-            draws.append(new_draw)
+            new_draw = [x for x in itertools.chain.from_iterable(itertools.zip_longest(draw1,draw2)) if x]
+
+            draws.append(list(sum(new_draw, ())))
 
         return draws
 
