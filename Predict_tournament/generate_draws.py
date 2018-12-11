@@ -1,85 +1,79 @@
-import itertools
 import random
-import operator
-import copy
-
 
 class Draws:
+    
+    def __generate_draw(self, draw, round, max_round):
+        """Generate one possible draw according to the
+        distribution well known of the seeds.
 
-    def __init__(self):
-        self.seeds_1_8_with_seeds_25_32, self.seeds_9_16_with_seeds_17_24 = self.__generate_all_draws()
+        Parameters
+        ----------
+            - draw : the draw of the current round
+            - round : the current round
+            - max_round : the round we want to achieve
 
-    def __generate_all_draws(self):
-        # Starting point of the draws
-        seeds_1_to_8 = [
-            [1,5,7,3,4,6,8,2], [1,7,5,3,4,6,8,2], [1,5,7,3,4,8,6,2], [1,7,5,3,4,8,6,2],
-            [1,6,7,3,4,5,8,2], [1,7,6,3,4,5,8,2], [1,6,7,3,4,8,5,2], [1,7,6,3,4,8,5,2],
-            [1,5,8,3,4,6,7,2], [1,8,5,3,4,6,7,2], [1,5,8,3,4,7,6,2], [1,8,5,3,4,7,6,2],
-            [1,6,8,3,4,5,7,2], [1,8,6,3,4,5,7,2], [1,6,8,3,4,7,5,2], [1,8,6,3,4,7,5,2],
-            [1,5,7,4,3,6,8,2], [1,7,5,4,3,6,8,2], [1,5,7,4,3,8,6,2], [1,7,5,4,3,8,6,2],
-            [1,6,7,4,3,5,8,2], [1,7,6,4,3,5,8,2], [1,6,7,4,3,8,5,2], [1,7,6,4,3,8,5,2],
-            [1,5,8,4,3,6,7,2], [1,8,5,4,3,6,7,2], [1,5,8,4,3,7,6,2], [1,8,5,4,3,7,6,2],
-            [1,6,8,4,3,5,7,2], [1,8,6,4,3,5,7,2], [1,6,8,4,3,7,5,2], [1,8,6,4,3,7,5,2]
-        ]
-        seeds_9_to_16 = copy.deepcopy(seeds_1_to_8)
-        for grid in seeds_9_to_16:
-            for n, i in enumerate(grid):
-                if i==1:
-                    grid[n]=9
-                if i==2:
-                    grid[n]=10
-                if i==3:
-                    grid[n]=11
-                if i==4:
-                    grid[n]=12
-                if i==5:
-                    grid[n]=13
-                if i==6:
-                    grid[n]=14
-                if i==7:
-                    grid[n]=15
-                if i==8:
-                    grid[n]=16
+        Return
+        ------
+        A possible draw as a list of 32 id players
+        """
+        if round > max_round:
+            return draw
 
-        # make all possible permutations
-        seeds_1_8_with_25_32 = []
-        seeds_9_16_with_17_24 = []
-        seeds_25_to_32 = list(itertools.permutations([25,26,27,28,29,30,31,32]))
-        seeds_17_to_24 = list(itertools.permutations([17,18,19,20,21,22,23,24]))
-
-        for draw in seeds_1_to_8:
-            for permut_draw in seeds_25_to_32:
-                new_draw = []
-                for i in range (0, 8):
-                    new_draw.append((draw[i], permut_draw[i])) 
-
-                seeds_1_8_with_25_32.append(new_draw)
-                
-        for draw in seeds_9_to_16:
-            for permut_draw in seeds_17_to_24:
-                new_draw = []
-                for i in range (0, 8):
-                    new_draw.append((draw[i], permut_draw[i])) 
-                
-                seeds_9_16_with_17_24.append(new_draw)
+        next_round_draw = []
+        if round==1:
+            playersA = [1,2]
+            advA = [3,4]
+        if round==2:
+            playersA = [1,2]
+            playersB = [3,4]
+            advA = [7,8]
+            advB = [5,6]
+        if round==3:
+            playersA = list(range(1, 5))
+            playersB = list(range(5, 9))
+            advA = list(range(13, 17))
+            advB = list(range(9, 13))
+        if round==4:
+            playersA = list(range(1, 9))
+            playersB = list(range(9, 17))
+            advA = list(range(25, 33))
+            advB = list(range(17, 25))
         
-        return seeds_1_8_with_25_32, seeds_9_16_with_17_24
+        for player_id in draw:
+            next_round_draw.append(player_id)
 
+            if player_id in playersA:
+                random_player_id = advA[random.randint(0, len(advA)-1)]
+                advA.remove(random_player_id)
+            else:
+                random_player_id = advB[random.randint(0, len(advB)-1)]
+                advB.remove(random_player_id)
+
+            next_round_draw.append(random_player_id)
+            
+        return self.__generate_draw(next_round_draw, round+1, max_round)
+        
+    
     def generate_draws(self, nb_draws):
+        """Generate a certain amount of possible draws according
+        to the well known distribution of the seeds.
+
+        Parameters
+        ----------
+            - nb_draw : the number of wished draws 
+
+        Return
+        ------
+        A a certain amount of possible draws as a list of lists
+        """
+
         draws = []
-
-        for i in range(nb_draws):
-            random1 = random.randint(1, len(self.seeds_1_8_with_seeds_25_32))
-            random2 = random.randint(1, len(self.seeds_9_16_with_seeds_17_24))
-
-            draw1 = self.seeds_1_8_with_seeds_25_32[random1]
-            draw2 = self.seeds_9_16_with_seeds_17_24[random2]
-
-            new_draw = [x for x in itertools.chain.from_iterable(itertools.zip_longest(draw1,draw2)) if x]
-
-            draws.append(list(sum(new_draw, ())))
-
+        for i in range(0, nb_draws):
+            new_draw = self.__generate_draw([1,2], 1, 4)
+            draws.append(new_draw)
+        
         return draws
+
 
 if __name__ == "__main__":
     x = Draws()
