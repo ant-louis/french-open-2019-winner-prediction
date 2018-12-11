@@ -7,13 +7,12 @@ class TournamentPredictor:
 
     def __init__(self):
         """
-        Initialize the prdictionary with the prediction of wonners in matches.csv
+        Initialize the prdictionary with the prediction of winners in matches.csv
         """
         self.pred_ditctionary = {}
-        file_predict = np.array(pd.read_csv("matches.csv", header = 0))
+        file_predict = np.array(pd.read_csv("matches.csv", header = 0, dtype=int))
         for i in range(len(file_predict[:,0])):
             self.pred_ditctionary[(file_predict[i,0],file_predict[i,1])] = file_predict[i,2]
-
     def winner(self, draw):
         """
         Return the winner of one draw
@@ -52,8 +51,8 @@ class TournamentPredictor:
         R: int
             The rank of the winner of game
         """
-        if(self.pred_ditctionary.get((a,b),True)):
-            print("Not in Deictionary")
+        if(self.pred_ditctionary.get((a,b),True))):
+            print("Not in Dictionnary")
             exit()
         if(a<b):
             return self.pred_ditctionary[(a,b)]
@@ -90,6 +89,6 @@ if __name__ == '__main__':
     predicator = TournamentPredictor()
     results = predicator.predict(10000)
     print(results)
-    print( np.argmax(results) + 1)
+    print(np.argmax(results) + 1)
     
     
