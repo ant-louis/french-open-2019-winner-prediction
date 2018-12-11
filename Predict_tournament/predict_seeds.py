@@ -13,8 +13,8 @@ players.drop(players.columns[0], axis=1, inplace=True)
 
 #--------------------------------MATCHES ---------------------------------------------------------#
 
-seeds = pd.read_csv('seeds.csv', encoding='utf-8')
-
+seeds = pd.read_csv('seeds_2018.csv', encoding='utf-8')
+seeds['Name'] = seeds['Name'].str.upper()
 #Generate all combinations
 combination = itertools.combinations(list(range(1,33)),2)
 df = pd.DataFrame([c for c in combination], columns=['ID_PlayerA','ID_PlayerB'])
@@ -71,7 +71,7 @@ if(os.path.isfile(filename)):
 prediction = pd.DataFrame()
 prediction['ID_PlayerA'] = to_predict['ID_PlayerA']
 prediction['ID_PlayerB'] = to_predict['ID_PlayerB']
-prediction['Winner']= 0
+prediction['Winner'] = 0
 for i,y in enumerate(y_pred):
     if y == 0:
         prediction.iloc[i,2] = to_predict.iloc[i ,1]
