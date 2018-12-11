@@ -24,7 +24,8 @@ players.drop(players.columns[0], axis=1, inplace=True)
 #--------------------------------MATCHES ---------------------------------------------------------#
 
 seeds = pd.read_csv(seed_file, encoding='utf-8')
-seeds['Name'] = seeds['Name'].str.upper()
+#Normalize and uppercase names
+seeds['Name'] = seeds['Name'].str.normalize('NFD').str.upper()
 
 #Generate all combinations
 combination = itertools.combinations(list(range(1,33)),2)
@@ -85,7 +86,7 @@ prediction['Winner'] = 0
 for i,y in enumerate(y_pred):
     if y == 0:
         prediction.iloc[i,2] = to_predict.iloc[i ,1]
-    else:
+    elif y == 1:
         prediction.iloc[i,2] = to_predict.iloc[i, 0]
 
 prediction.to_csv(os.path.join(prefix, os.path.join('Big-Data-Project/Predict_tournament/', output_file)),index=False)
