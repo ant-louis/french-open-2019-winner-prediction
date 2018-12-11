@@ -76,7 +76,7 @@ class TournamentPredictor:
             An array of probabilities for each player to win
             the tournament
         """
-        results = np.zeros(len(self.pred_ditctionary))
+        results = np.zeros(32)
 
         draw_generate = Draws()
         draws = draw_generate.generate_draws(nb_draws)
@@ -89,7 +89,7 @@ class TournamentPredictor:
 
 if __name__ == '__main__':
     predicator = TournamentPredictor()
-    results = predicator.predict(10)
+    results = predicator.predict(100000)
     print(results)
     print(np.argmax(results) + 1)
     
