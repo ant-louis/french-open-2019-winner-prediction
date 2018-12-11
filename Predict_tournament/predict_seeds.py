@@ -14,7 +14,9 @@ players.drop(players.columns[0], axis=1, inplace=True)
 #--------------------------------MATCHES ---------------------------------------------------------#
 
 seeds = pd.read_csv('seeds.csv', encoding='utf-8')
-combination = itertools.combinations(list(range(1,32)),2)
+
+#Generate all combinations
+combination = itertools.combinations(list(range(1,33)),2)
 df = pd.DataFrame([c for c in combination], columns=['ID_PlayerA','ID_PlayerB'])
 to_predict = pd.merge(df,seeds,left_on="ID_PlayerA",right_on="Ranking")
 to_predict = pd.merge(to_predict,seeds,left_on="ID_PlayerB",right_on="Ranking", suffixes=['_PlayerA','_PlayerB'])
