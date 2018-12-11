@@ -95,7 +95,8 @@ if __name__ == '__main__':
     matches_file = sys.argv[1]
 
     predicator = TournamentPredictor(matches_file)
-    results = predicator.predict(10)
+    results = predicator.predict(10000)
+
     print(results)
     print(np.argmax(results) + 1)
     
