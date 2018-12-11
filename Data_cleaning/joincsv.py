@@ -42,6 +42,10 @@ matches.replace(to_replace='NR',value=0,inplace=True)
 matches.replace(to_replace=' ',value=0,inplace=True)
 matches.replace(to_replace='`1',value=0,inplace=True)
 
+#Convert names to uppercase 
+matches['Winner'] = matches['Winner'].str.upper()
+matches['Loser'] = matches['Loser'].str.upper()
+
 
 #Rename winner and loser to player A and B
 to_rename={'Winner':'PlayerA',
@@ -82,6 +86,7 @@ players.drop(columns=to_drop_players, inplace=True)
 #Reclean invalid values that are not numeric in a given column
 players.replace(to_replace='Infinity',value=100,inplace=True)
 
+players['Name'] = players['Name'].str.upper()
 # Split the match time
 players["Match Time"] = players["Match Time"].astype(str).str.split(":").apply(lambda x: int(x[0]) * 60 + int(x[1]))
 players.rename(columns={"Match Time":"Match Time Average"}, inplace=True)
@@ -99,7 +104,6 @@ players = pd.get_dummies(players, columns = hot_encode_player)
 players_and_matches = pd.merge(matches,players,left_on="PlayerA",right_on="Name",suffixes=['_Match','_PlayerA'])
 players_and_matches = pd.merge(players_and_matches,players,left_on="PlayerB",right_on="Name",suffixes=['_PlayerA','_PlayerB'])
 
-
 #Drop columns from merged
 todrop_merged = ['Name_PlayerA', 'Name_PlayerB', 'PlayerA', 'PlayerB']
 players_and_matches.drop(columns=todrop_merged,inplace=True)
@@ -115,8 +119,6 @@ players_and_matches = players_and_matches[['ID_PlayerA', 'ID_PlayerB'] + cols + 
 #Convert ID's to numeric values and sort them
 players_and_matches = players_and_matches.apply(pd.to_numeric)
 players_and_matches.sort_values(by = ['ID_PlayerA','ID_PlayerB'],inplace=True)
-
-
 
 #Write to csv
 players_and_matches.to_csv(os.path.join(prefix,"training_matches_players.csv"), index=False)
