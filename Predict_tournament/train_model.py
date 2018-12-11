@@ -67,22 +67,17 @@ def create_estimator():
     train_features = df.drop(columns=['PlayerA Win']).columns
     X = df.drop(columns=['PlayerA Win']).values.squeeze()  
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
     model = None
     filename = "RandomForest_depth3.pkl"
-    if(os.path.isfile(filename)):
-        model = joblib.load(filename)
-    else:
-
-        
-        #Training
-        print("Training... getting most important features")
-        
-        with measure_time('Training...getting most important features'):
-            model = RandomForestClassifier(n_estimators=1000,max_depth=3, bootstrap=True,n_jobs=-1, random_state=42)
-            model.fit(X_train,y_train)
-            joblib.dump(model, filename) 
+    #Training
+    print("Training... getting most important features")
+    
+    with measure_time('Training...getting most important features'):
+        model = RandomForestClassifier(n_estimators=1000,max_depth=3, bootstrap=True,n_jobs=-1)
+        model.fit(X_train,y_train)
+        joblib.dump(model, filename) 
 
     feature_importances = pd.DataFrame(model.feature_importances_,
                                         index = train_features,

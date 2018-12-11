@@ -2,17 +2,17 @@ import numpy as np
 import pandas as pd
 import random
 from generate_draws import Draws
-
+import sys
 class TournamentPredictor:
 
-    def __init__(self):
+    def __init__(self, filename):
         """
         Initialize the prdictionary with the prediction of winners in matches.csv
         """
-        self.pred_ditctionary = {}
-        file_predict = np.array(pd.read_csv("matches.csv", header = 0, dtype=int))
+        self.pred_dictionary = {}
+        file_predict = np.array(pd.read_csv(filename, header = 0, dtype=int))
         for i in range(len(file_predict[:,0])):
-            self.pred_ditctionary[(file_predict[i,0],file_predict[i,1])] = file_predict[i,2]
+            self.pred_dictionary[(file_predict[i,0],file_predict[i,1])] = file_predict[i,2]
 
     def winner(self, draw):
         """
@@ -52,14 +52,14 @@ class TournamentPredictor:
         R: int
             The rank of the winner of game
         """
-        if((a,b) not in self.pred_ditctionary and (b,a) not in self.pred_ditctionary):
+        if((a,b) not in self.pred_dictionary and (b,a) not in self.pred_dictionary):
             print(a,b)
             print("Not in Dictionnary")
             exit()
         if(a<b):
-            return self.pred_ditctionary[(a,b)]
+            return self.pred_dictionary[(a,b)]
         else:
-            return self.pred_ditctionary[(b,a)]
+            return self.pred_dictionary[(b,a)]
     
     def predict(self, nb_draws):
         """
@@ -88,7 +88,13 @@ class TournamentPredictor:
 
 
 if __name__ == '__main__':
-    predicator = TournamentPredictor()
+
+    if(len(sys.argv) != 2):
+        print("Call with \"python predict_tournament.py matches_examples.csv\"")
+        exit()
+    matches_file = sys.argv[1]
+
+    predicator = TournamentPredictor(matches_file)
     results = predicator.predict(10)
     print(results)
     print(np.argmax(results) + 1)
