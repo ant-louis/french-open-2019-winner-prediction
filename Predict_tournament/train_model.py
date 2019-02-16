@@ -8,6 +8,7 @@ import numpy as np
 
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import cross_validate
+from sklearn.model_selection import RandomizedSearchCV
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -60,17 +61,19 @@ def load_from_csv(path, delimiter=','):
 def create_estimator():
 
     # Loading data
-    prefix = '/home/tom/Documents/Master1_DataScience/1er QUADRI/Big-Data-Project/Data_cleaning/'
+    prefix = '/home/tom/Documents/Uliège/Big-Data-Project/Data_cleaning'
     df = load_from_csv(os.path.join(prefix, 'training_matches_players.csv'))
 
     y = df['PlayerA Win'].values.squeeze()
-    train_features = df.drop(columns=['PlayerA Win']).columns
-    X = df.drop(columns=['PlayerA Win']).values.squeeze()  
+    toDrop = ['PlayerA Win', 'ID_PlayerA', 'ID_PlayerB'] #ID's skew results
+    train_features = df.drop(columns=toDrop).columns
+    X = df.drop(columns=toDrop).values.squeeze()  
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
     model = None
-    filename = "RandomForest_depth3.pkl"
+    filename = "RandomForest.pkl"
+
     #Training
     print("Training... getting most important features")
     
@@ -96,8 +99,41 @@ def create_estimator():
     print("=================================================================")
 
 
+def tune_hyperparameter():
+    # Loading data
+    prefix = '/home/tom/Documents/Uliège/Big-Data-Project/Data_cleaning'
+    df = load_from_csv(os.path.join(prefix, 'training_matches_players.csv'))
+
+    y = df['PlayerA Win'].values.squeeze()
+    toDrop = ['PlayerA Win','ID_PlayerA', 'ID_PlayerB'] #ID's skew results
+    train_features = df.drop(columns=toDrop).columns
+    X = df.drop(columns=toDrop).values.squeeze()  
+
+    #Hyperparameter tuning
+    max_features = ['auto', 'sqrt']
+    max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
+    max_depth.append(None)
+    min_samples_split = [2, 5, 10]
+    min_samples_leaf = [1, 2, 4]
+    bootstrap = [True, False]
+
+    # Create the random grid
+    random_grid = {'max_features': max_features,
+                'max_depth': max_depth,
+                'min_samples_split': min_samples_split,
+                'min_samples_leaf': min_samples_leaf,
+                'bootstrap': bootstrap}
+
+    rf = RandomForestClassifier(n_estimators=100)
+    rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = -1)
+ 
+    rf_random.fit(X, y)
+
+    print("Best parameters",rf_random.best_params_)
+
 if __name__ == "__main__":
 
-    create_estimator()
+    # create_estimator()
+    tune_hyperparameter()
 
    
