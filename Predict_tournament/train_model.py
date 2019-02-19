@@ -72,31 +72,38 @@ def create_estimator():
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
     model = None
-    filename = "RandomForest.pkl"
+    filename = "RandomForest_opt.pkl"
 
     #Training
     print("Training... getting most important features")
     
     with measure_time('Training...getting most important features'):
-        model = RandomForestClassifier(n_estimators=1000,max_depth=3, bootstrap=True,n_jobs=-1)
-        model.fit(X_train,y_train)
+        model = RandomForestClassifier(n_estimators=1000,
+                                        min_samples_split=2,
+                                        min_samples_leaf=4,
+                                        max_features='sqrt',
+                                        max_depth=10, 
+                                        bootstrap=True,
+                                        verbose=2,
+                                        n_jobs=-1)
+        model.fit(X,y)
         joblib.dump(model, filename) 
 
-    feature_importances = pd.DataFrame(model.feature_importances_,
-                                        index = train_features,
-                                        columns=['importance']).sort_values('importance',ascending=False)
+    # feature_importances = pd.DataFrame(model.feature_importances_,
+    #                                     index = train_features,
+    #                                     columns=['importance']).sort_values('importance',ascending=False)
 
-    print("Most important features")
-    print(feature_importances[:100])
-    feature_importances[:100].to_csv("feature_importance.csv")
+    # print("Most important features")
+    # print(feature_importances[:100])
+    # feature_importances[:100].to_csv("feature_importance.csv")
   
-    y_pred = model.predict(X_test)
-    print("Test set accuracy: {}".format(accuracy_score(y_test, y_pred)))
-    print("=================================================================")
+    # y_pred = model.predict(X_test)
+    # print("Test set accuracy: {}".format(accuracy_score(y_test, y_pred)))
+    # print("=================================================================")
 
-    y_pred = model.predict(X_train)
-    print("Training set accuracy: {}".format(accuracy_score(y_train, y_pred)))
-    print("=================================================================")
+    # y_pred = model.predict(X_train)
+    # print("Training set accuracy: {}".format(accuracy_score(y_train, y_pred)))
+    # print("=================================================================")
 
 
 def tune_hyperparameter():
@@ -119,21 +126,27 @@ def tune_hyperparameter():
 
     # Create the random grid
     random_grid = {'max_features': max_features,
-                'max_depth': max_depth,
-                'min_samples_split': min_samples_split,
-                'min_samples_leaf': min_samples_leaf,
-                'bootstrap': bootstrap}
+                    'max_depth': max_depth,
+                    'min_samples_split': min_samples_split,
+                    'min_samples_leaf': min_samples_leaf,
+                    'bootstrap': bootstrap}
 
     rf = RandomForestClassifier(n_estimators=100)
-    rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = -1)
+    rf_random = RandomizedSearchCV(estimator = rf, 
+                                    param_distributions = random_grid, 
+                                    n_iter = 100, 
+                                    cv = 3, 
+                                    verbose=2, 
+                                    random_state=42, 
+                                    n_jobs = -2)
  
     rf_random.fit(X, y)
 
-    print("Best parameters",rf_random.best_params_)
+    print("Best parameters", rf_random.best_params_)
 
 if __name__ == "__main__":
 
-    # create_estimator()
-    tune_hyperparameter()
+    create_estimator()
+    # tune_hyperparameter()
 
    
