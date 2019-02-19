@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestClassifier
 PREFIX = '/home/tom/Documents/Uliege/Big-Data-Project'
 
 
-def createToPredictFile(seed_file):
+def createToPredictFile(seed_file, output_file):
 
 
     """Create to_predict csv file from seeds"""
@@ -62,23 +62,28 @@ def createToPredictFile(seed_file):
     to_predict.sort_values(by = ['ID_PlayerA','ID_PlayerB'],inplace=True)
 
     # Export to csv
-    to_predict.to_csv(os.path.join(PREFIX, 'Predict_tournament/Test_data/to_predict.csv'),index=False)
+    to_predict.to_csv(os.path.join(PREFIX, 'Predict_tournament/Test_data/', output_file),index=False)
 
 
 #------------------------------------------------------Predicting--------------------------------------------
 
-def predictSeeds(output_file):
-    to_predict = pd.read_csv(os.path.join(PREFIX, 'Predict_tournament/Test_data/to_predict.csv'), dtype=float, encoding='utf-8')
+def predictSeeds(input_file, output_file):
+    to_predict = pd.read_csv(os.path.join(PREFIX, 'Predict_tournament/Test_data/', input_file), dtype=float, encoding='utf-8')
     
     to_predict_without_id = to_predict.drop(columns=['ID_PlayerA', 'ID_PlayerB'],inplace=False)
+    y_pred_proba = None
 
     #Import estimator
     estimator_file = "RandomForest_opt.pkl"
-    if(os.path.isfile(estimator_file)):
-        model = joblib.load(estimator_file)
-        y_pred_proba = model.predict_proba(to_predict_without_id)
+    path = os.path.join(PREFIX,'Predict_tournament/', estimator_file)
 
-    print(y_pred_proba)
+    # Predicting the output, extracting probabilities
+    if(os.path.isfile(path)):
+        model = joblib.load(path)
+        y_pred_proba = model.predict_proba(to_predict_without_id)
+    else:
+        print("No estimator found. Exiting...")
+        exit()
 
     # Creating the prediction result
     prediction = pd.DataFrame()
@@ -98,17 +103,19 @@ def predictSeeds(output_file):
 
 if __name__=='__main__':
 
-    if(len(sys.argv) != 3):
-        print("Call with \"python predict_seeds.py predict example_output.csv\"")
-        print(" or \"python predict_seeds.py createFile example_input.csv\"")
+    if(len(sys.argv) != 4 ):
+        print("Call with \"python predict_seeds.py predict seeds_20XX.csv to_predict20XX.csv\"")
+        print(" or \"python predict_seeds.py createFile to_predict20XX.csv matches_20XX.csv\"")
         exit()
     
     if(sys.argv[1] == 'predict'):
-        predictSeeds(sys.argv[2])
+        predictSeeds(sys.argv[2], sys.argv[3])
     elif(sys.argv[1] == 'createFile'):
-        createToPredictFile(sys.argv[2])
+        createToPredictFile(sys.argv[2], sys.argv[3])
 
     else:
-        print("Call with \"python predict_seeds.py predict example_output.csv\"")
-        print(" or \"python predict_seeds.py createFile example_input.csv\"")
+        print("Call with \"python predict_seeds.py predict seeds_20XX.csv to_predict20XX.csv\"")
+        print(" or \"python predict_seeds.py createFile to_predict20XX.csv matches_20XX.csv\"")
         exit()
+    
+    
