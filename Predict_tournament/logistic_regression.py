@@ -12,6 +12,7 @@ from sklearn.model_selection import RandomizedSearchCV
 
 from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import RFE
+from sklearn import preprocessing
 from sklearn.linear_model import LogisticRegressionCV
 
 from sklearn.metrics import accuracy_score
@@ -63,14 +64,13 @@ def create_estimator():
 
     # Loading data
     prefix = '../Data_cleaning'
-    df = load_from_csv(os.path.join(prefix, 'training_matches_players.csv'))
+    df = load_from_csv(os.path.join(prefix, 'training_matches_players_diff.csv'))
 
     y = df['PlayerA Win'].values.squeeze()
     toDrop = ['PlayerA Win', 'ID_PlayerA', 'ID_PlayerB'] #ID's skew results
     train_features = df.drop(columns=toDrop).columns
-    X = df.drop(columns=toDrop).values.squeeze()  
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    X = df.drop(columns=toDrop).values.squeeze() 
+    X = preprocessing.scale(X) 
 
     model = None
     filename = "Logistic_regression.pkl"
@@ -80,19 +80,19 @@ def create_estimator():
     
     with measure_time('Training...getting most important features'):
         model = LogisticRegressionCV(cv=10, multi_class='auto', max_iter=10000)
-        selector = RFE(model, n_features_to_select = 1)
-        selector.fit(X,y)
-        joblib.dump(selector, filename) 
+        #selector = RFE(model, n_features_to_select = 1)
+        model.fit(X,y)
+        joblib.dump(model, filename) 
 
-    feature_importances = pd.DataFrame(model.feature_importances_,
-                                          index = train_features,
-                                          columns=['importance']).sort_values('importance',ascending=False)
+    #feature_importances = pd.DataFrame(model.feature_importances_,
+    #                                      index = train_features,
+    #                                      columns=['importance']).sort_values('importance',ascending=False)
 
-    print("Most important features")
-    print(selector.ranking_)
+    #print("Most important features")
+    #print(model.ranking_)
     # feature_importances[:100].to_csv("feature_importance.csv")
   
-    print("Test set accuracy: {}".format(selector.score(X,y)))
+    print("Test set accuracy: {}".format(model.score(X,y)))
     print("=================================================================")
 
 def tune_hyperparameter():
@@ -103,7 +103,8 @@ def tune_hyperparameter():
     y = df['PlayerA Win'].values.squeeze()
     toDrop = ['PlayerA Win','ID_PlayerA', 'ID_PlayerB'] #ID's skew results
     train_features = df.drop(columns=toDrop).columns
-    X = df.drop(columns=toDrop).values.squeeze()  
+    X = df.drop(columns=toDrop).values.squeeze()
+    X = preprocessing.scale(X)
 
     #Hyperparameter tuning
     max_features = ['auto', 'sqrt']
@@ -134,7 +135,7 @@ def tune_hyperparameter():
 
 if __name__ == "__main__":
 
-    #create_estimator()
-    tune_hyperparameter()
+    create_estimator()
+    #tune_hyperparameter()
 
    
