@@ -10,9 +10,9 @@ class TournamentPredictor:
         Initialize the prdictionary with the prediction of winners in matches.csv
         """
         self.pred_dictionary = {}
-        file_predict = np.array(pd.read_csv(filename, header = 0, dtype=int))
+        file_predict = np.array(pd.read_csv(filename, header = 0, dtype=float))
         for i in range(len(file_predict[:,0])):
-            self.pred_dictionary[(file_predict[i,0],file_predict[i,1])] = file_predict[i,2]
+            self.pred_dictionary[(int(file_predict[i,0]),int(file_predict[i,1]))] = file_predict[i,2]
 
     def winner(self, draw):
         """
@@ -57,9 +57,15 @@ class TournamentPredictor:
             print("Not in Dictionnary")
             exit()
         if(a<b):
-            return self.pred_dictionary[(a,b)]
+            if random.random() < self.pred_dictionary[(a,b)]:
+                return a
+            else:
+                return b
         else:
-            return self.pred_dictionary[(b,a)]
+            if random.random() < self.pred_dictionary[(b,a)]:
+                return b
+            else:
+                return a
     
     def predict(self, nb_draws):
         """
@@ -93,7 +99,7 @@ if __name__ == '__main__':
         print("Call with \"python predict_tournament.py matches_examples.csv\"")
         exit()
     matches_file = sys.argv[1]
-
+    matches_file = "Test_data/"+matches_file
     predicator = TournamentPredictor(matches_file)
     results = predicator.predict(10000)
     print("Winner of tournament with filemane '{}' :".format(matches_file))
