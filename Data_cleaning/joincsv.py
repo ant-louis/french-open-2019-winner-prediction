@@ -122,10 +122,10 @@ players_and_matches = players_and_matches[['ID_PlayerA', 'ID_PlayerB'] + cols + 
 players_and_matches = players_and_matches.apply(pd.to_numeric)
 players_and_matches.sort_values(by = ['ID_PlayerA','ID_PlayerB'],inplace=True)
 
-# #Write to csv
-# players_and_matches.to_csv("training_matches_players.csv", index=False)
-# matches.to_csv("training_matches.csv", index=False)
-# players.to_csv("training_players.csv", index=False)
+#Write to csv
+players_and_matches.to_csv("training_matches_players.csv", index=False)
+matches.to_csv("training_matches.csv", index=False)
+players.to_csv("training_players.csv", index=False)
 
 # ---------------- =-------------------------------DIFFERENCE---------------------------------------
 
@@ -196,6 +196,6 @@ players_diff.columns = column_names_diff
 # Concatenating into new dataframe
 players_and_matches_diff = pd.concat([players_and_matches[non_numeric_cols[:-1]], 
                                   players_diff, 
-                                  players_and_matches[non_numeric_cols[-1]]], axis=1)
+                            to_predict      players_and_matches[non_numeric_cols[-1]]], axis=1)
 
 players_and_matches_diff.to_csv("training_matches_players_diff.csv", index=False)
