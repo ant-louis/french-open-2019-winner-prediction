@@ -84,9 +84,9 @@ def create_estimator():
         selector.fit(X,y)
         joblib.dump(selector, filename) 
 
-    feature_importances = pd.DataFrame(model.feature_importances_,
-                                          index = train_features,
-                                          columns=['importance']).sort_values('importance',ascending=False)
+    # feature_importances = pd.DataFrame(model.feature_importances_,
+    #                                       index = train_features,
+    #                                       columns=['importance']).sort_values('importance',ascending=False)
 
     print("Most important features")
     print(selector.ranking_)
@@ -98,7 +98,7 @@ def create_estimator():
 def tune_hyperparameter():
     # Loading data
     prefix = '../Data_cleaning'
-    df = load_from_csv(os.path.join(prefix, 'training_matches_players.csv'))
+    df = load_from_csv(os.path.join(prefix, 'training_matches_players_diff.csv'))
 
     y = df['PlayerA Win'].values.squeeze()
     toDrop = ['PlayerA Win','ID_PlayerA', 'ID_PlayerB'] #ID's skew results
@@ -106,13 +106,6 @@ def tune_hyperparameter():
     X = df.drop(columns=toDrop).values.squeeze()  
 
     #Hyperparameter tuning
-    max_features = ['auto', 'sqrt']
-    max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
-    max_depth.append(None)
-    min_samples_split = [2, 5, 10]
-    min_samples_leaf = [1, 2, 4]
-    bootstrap = [True, False]
-
     number_feature = [int(x) for x in np.linspace(1, 50, num = 2)]
 
     # Create the random grid
