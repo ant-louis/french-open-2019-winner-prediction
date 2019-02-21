@@ -77,13 +77,6 @@ def createToPredictFile(seed_file, output_file):
 
     cols = list(to_predict.columns.values)
 
-    import pprint
-    pp = pprint.PrettyPrinter(indent=4)
-    # # BEFORE PRINT
-    # pp.pprint(cols)
-
-
-
 
     # -----------------------------------DIFFERENCE -------------------------
     # Separating numeric columns from non numeric columns
@@ -176,7 +169,7 @@ def createToPredictFile(seed_file, output_file):
                 'Surface_Hard']
     for col in cols_to_add:
         to_predict[col] = 0
-        
+
     # We play at Roland Garros
     to_predict['Nb sets max'] = 5
     to_predict['Surface_Clay'] = 1
@@ -186,10 +179,6 @@ def createToPredictFile(seed_file, output_file):
     # Convert ID's to numeric values and sort them
     to_predict = to_predict.apply(pd.to_numeric)
     to_predict.sort_values(by = ['ID_PlayerA','ID_PlayerB'],inplace=True)
-
-    # AFTER PRINT
-    cols = list(to_predict.columns.values)
-    pp.pprint(cols)
 
     # Export to csv
     to_predict.to_csv(output_file,index=False)
