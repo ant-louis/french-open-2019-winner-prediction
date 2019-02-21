@@ -173,6 +173,8 @@ def createToPredictFile(seed_file, output_file):
     # We play at Roland Garros
     to_predict['Nb sets max'] = 5
     to_predict['Surface_Clay'] = 1
+    to_predict['Court_Outdoor'] = 1
+    to_predict['Court_Indoor'] = 0
 
 
 
