@@ -89,7 +89,9 @@ def create_estimator(testFeatureImportance):
                                             verbose=1,
                                             n_jobs=-1)
             model.fit(X,y)
-            # joblib.dump(model, filename) 
+            
+            if not testFeatureImportance:
+                joblib.dump(model, filename) 
         
         feature_importance_total = np.add(feature_importance_total, np.array(model.feature_importances_).reshape(train_features.shape[0],1))
 
