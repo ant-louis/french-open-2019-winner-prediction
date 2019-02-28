@@ -50,44 +50,57 @@ def load_from_csv(path, delimiter=','):
     """
     return pd.read_csv(path, delimiter=delimiter,dtype=float)
 
-def create_estimator():
+def create_estimator(testFeatureImportance):
 
     # Loading data
-    prefix = '/home/tom/Documents/Uliège/Big-Data-Project/Data_cleaning'
-    df = load_from_csv(os.path.join(prefix, 'training_matches_players.csv'))
+    df = load_from_csv('../Data_cleaning/training_matches_players_diff.csv')
 
     y = df['PlayerA Win'].values.squeeze()
     toDrop = ['PlayerA Win', 'ID_PlayerA', 'ID_PlayerB'] #ID's skew results
     train_features = df.drop(columns=toDrop).columns
     X = df.drop(columns=toDrop).values.squeeze()  
+    
+    #Scaling
+    X = preprocessing.scale(X)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
     model = None
-    filename = "RandomForest_opt.pkl"
+    filename = "RandomForest_diff.pkl"
 
     #Training
     print("Training... getting most important features")
     
-    with measure_time('Training...getting most important features'):
-        model = RandomForestClassifier(n_estimators=1000,
-                                        min_samples_split=2,
-                                        min_samples_leaf=4,
-                                        max_features='sqrt',
-                                        max_depth=10, 
-                                        bootstrap=True,
-                                        verbose=2,
-                                        n_jobs=-1)
-        model.fit(X,y)
-        joblib.dump(model, filename) 
+    if testFeatureImportance:
+        ntry = 10
+    else:
+        ntry = 1
+    feature_importance_total = np.zeros((train_features.shape[0],1))
+    for n in range(ntry):
+        with measure_time('Training...getting most important features'):
+            print("N = ",n)
+            model = RandomForestClassifier(n_estimators=1000,
+                                            min_samples_split=2,
+                                            min_samples_leaf=4,
+                                            max_features=0.3,
+                                            max_depth=10, 
+                                            bootstrap=True,
+                                            random_state=42,
+                                            verbose=1,
+                                            n_jobs=-1)
+            model.fit(X,y)
+            # joblib.dump(model, filename) 
+        
+        feature_importance_total = np.add(feature_importance_total, np.array(model.feature_importances_).reshape(train_features.shape[0],1))
 
-    # feature_importances = pd.DataFrame(model.feature_importances_,
-    #                                     index = train_features,
-    #                                     columns=['importance']).sort_values('importance',ascending=False)
+    feature_importances = pd.DataFrame(feature_importance_total,
+                                        index = train_features,
+                                        columns=['importance'])
 
-    # print("Most important features")
-    # print(feature_importances[:100])
-    # feature_importances[:100].to_csv("feature_importance.csv")
+    print("Most important features")
+    feature_importances['importance'] = feature_importances['importance'] / ntry
+    print(feature_importances[:100].sort_values('importance',ascending=False))
+    feature_importances[:100].to_csv("feature_importance.csv")
   
     # y_pred = model.predict(X_test)
     # print("Test set accuracy: {}".format(accuracy_score(y_test, y_pred)))
@@ -104,10 +117,10 @@ def tune_hyperparameter():
 
     y = df['PlayerA Win'].values.squeeze()
     toDrop = ['PlayerA Win','ID_PlayerA', 'ID_PlayerB'] #ID's skew results
-    train_features = df.drop(columns=toDrop).columns
     X = df.drop(columns=toDrop).values.squeeze()  
 
-    # X = preprocessing.scale(X)
+    # Normalization
+    X = preprocessing.scale(X)
 
     #Hyperparameter tuning
     max_features = ['auto', 'sqrt']
@@ -115,19 +128,17 @@ def tune_hyperparameter():
     max_depth.append(None)
     min_samples_split = [2, 5, 10]
     min_samples_leaf = [1, 2, 4]
-    bootstrap = [True, False]
 
     # Create the random grid
     random_grid = {'max_features': max_features,
                     'max_depth': max_depth,
                     'min_samples_split': min_samples_split,
-                    'min_samples_leaf': min_samples_leaf,
-                    'bootstrap': bootstrap}
+                    'min_samples_leaf': min_samples_leaf}
 
     rf = RandomForestClassifier(n_estimators=100)
     rf_random = RandomizedSearchCV(estimator = rf, 
                                     param_distributions = random_grid, 
-                                    n_iter = 100, 
+                                    n_iter = 28, 
                                     cv = 3, 
                                     verbose=2, 
                                     random_state=42, 
@@ -139,7 +150,7 @@ def tune_hyperparameter():
 
 if __name__ == "__main__":
 
-    # create_estimator()
-    tune_hyperparameter()
+    create_estimator(False)
+    # tune_hyperparameter()
 
    
