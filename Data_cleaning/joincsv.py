@@ -127,13 +127,32 @@ players_and_matches.to_csv("training_matches_players.csv", index=False)
 matches.to_csv("training_matches.csv", index=False)
 players.to_csv("training_players.csv", index=False)
 
-# ---------------- =-------------------------------DIFFERENCE---------------------------------------
+# -----------------------------------------------DIFFERENCE---------------------------------------
 
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+# #BEFORE PRINT
+# pp.pprint(cols)
 
 # Separating numeric columns from non numeric columns
 non_numeric_cols = [
   'ID_PlayerA',
   'ID_PlayerB',
+  'Nb sets max',
+  'Court_Indoor',
+  'Court_Outdoor',
+  'Series_ATP250',
+  'Series_ATP500',
+  'Series_Grand Slam',
+  'Series_International',
+  'Series_International Gold',
+  'Series_Masters',
+  'Series_Masters 1000',
+  'Series_Masters Cup',
+  'Surface_Carpet',
+  'Surface_Clay',
+  'Surface_Grass',
+  'Surface_Hard',
 
   'Favorite Surface_All-Rounder_PlayerA',
   'Favorite Surface_Carpet_PlayerA',
@@ -172,7 +191,7 @@ non_numeric_cols = [
 ]
 
 numeric_cols = [col for col in cols if col not in non_numeric_cols]
-
+print(numeric_cols)
 #Drop redundant hand play variable (already in variable 'Plays')
 hands = ['Plays_Left-handed_PlayerA','Plays_Right-handed_PlayerA','Plays_Left-handed_PlayerB','Plays_Right-handed_PlayerB']
 numeric_cols = [col for col in numeric_cols if col not in hands]
@@ -195,7 +214,13 @@ players_diff.columns = column_names_diff
 
 # Concatenating into new dataframe
 players_and_matches_diff = pd.concat([players_and_matches[non_numeric_cols[:-1]], 
-                                  players_diff, 
-                            to_predict      players_and_matches[non_numeric_cols[-1]]], axis=1)
+                                      players_diff, 
+                                      players_and_matches[non_numeric_cols[-1]]], axis=1)
 
 players_and_matches_diff.to_csv("training_matches_players_diff.csv", index=False)
+
+
+# AFTER PRINT
+all_cols= list(players_and_matches_diff.columns.values)
+
+pp.pprint(all_cols)
