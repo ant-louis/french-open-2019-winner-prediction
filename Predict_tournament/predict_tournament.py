@@ -3,11 +3,12 @@ import pandas as pd
 import random
 from generate_draws import Draws
 import sys
-class TournamentPredictor:
 
+
+class TournamentPredictor:
     def __init__(self, filename):
         """
-        Initialize the prdictionary with the prediction of winners in matches.csv
+        Initialize the dictionary with the prediction of winners in matches.csv
         """
         self.pred_dictionary = {}
         file_predict = np.array(pd.read_csv(filename, header = 0, dtype=float))
@@ -16,18 +17,7 @@ class TournamentPredictor:
 
     def winner(self, draw):
         """
-        Return the winner of one draw
-
-        Parameters
-        ----------
-        draw: array
-            An array of the rank of players corresponding to one
-            particular draw
-
-        Return
-        ------
-        W: int
-            The rank of the winner of the draw
+        Given a draw, return the winner of that draw according to our prdictions.
         """
         if(len(draw) == 1):
             return draw[0]
@@ -38,19 +28,8 @@ class TournamentPredictor:
 
     def predict_match(self, a, b):
         """
-        Predict the winner of a match
-
-        Parameters
-        ----------
-        a: int
-            The rank of the first player
-        b: int
-            The rank of the second player
-
-        Return
-        ------
-        R: int
-            The rank of the winner of game
+        Given the ids of two plays, return the winneer of th match according to
+        our predictions.
         """
         if((a,b) not in self.pred_dictionary and (b,a) not in self.pred_dictionary):
             print(a,b)
@@ -69,18 +48,8 @@ class TournamentPredictor:
     
     def predict(self, nb_draws):
         """
-        Return the probability for all players to win the tournament
-
-        Parameters
-        ----------
-        nb_draws: int
-            The number of prediction to make
-
-        Return
-        ------
-        R: array
-            An array of probabilities for each player to win
-            the tournament
+        Considering a ceertain number of possible draws, return the probability for
+        each player to win the tournament.
         """
         results = np.zeros(32)
 
@@ -105,5 +74,3 @@ if __name__ == '__main__':
     print("Winner of tournament with filemane '{}' :".format(matches_file))
     print(results)
     print(np.argmax(results) + 1)
-    
-    

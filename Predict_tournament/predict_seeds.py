@@ -66,6 +66,8 @@ def createToPredictFile(seed_file, output_file):
     #Generate all combinations
     combination = itertools.combinations(list(range(1,33)),2)
     df = pd.DataFrame([c for c in combination], columns=['ID_PlayerA','ID_PlayerB'])
+
+    # Match the seed number to the player and merge the two
     to_predict = pd.merge(df,seeds,left_on="ID_PlayerA",right_on="Ranking")
     to_predict = pd.merge(to_predict,seeds,left_on="ID_PlayerB",right_on="Ranking", suffixes=['_PlayerA','_PlayerB'])
 
@@ -82,13 +84,17 @@ def createToPredictFile(seed_file, output_file):
     #Drop unncessary columns
     to_drop = ['Name_PlayerA',
                 'Name_PlayerB',
-                'PlayerA Win'
+                'PlayerA Win',
+                'Plays_Left-handed_PlayerA',
+                'Plays_Right-handed_PlayerA',
+                'Plays_Left-handed_PlayerB',
+                'Plays_Right-handed_PlayerB'
                 ]
 
     to_predict.drop(columns=to_drop,inplace=True)
 
     # We play at Roland Garros
-    to_predict['Nb sets max'] = 3
+    to_predict['Nb sets max'] = 5
     to_predict['Surface_Clay'] = 1
 
     # Update the rankings
@@ -156,22 +162,3 @@ if __name__=='__main__':
         createToPredictFile(input_file, output_file)
     else:
         predictSeeds(input_file, output_file, model_name)
-
-
-
-    # if(len(sys.argv) != 4 ):
-    #     print("Call with \"python predict_seeds.py predict seeds_20XX.csv to_predict20XX.csv\"")
-    #     print(" or \"python predict_seeds.py createFile to_predict20XX.csv matches_20XX.csv\"")
-    #     exit()
-    
-    # if(sys.argv[1] == 'predict'):
-    #     predictSeeds(sys.argv[2], sys.argv[3])
-    # elif(sys.argv[1] == 'createFile'):
-    #     createToPredictFile(sys.argv[2], sys.argv[3])
-
-    # else:
-    #     print("Call with \"python predict_seeds.py predict seeds_20XX.csv to_predict20XX.csv\"")
-    #     print(" or \"python predict_seeds.py createFile to_predict20XX.csv matches_20XX.csv\"")
-    #     exit()
-    
-    

@@ -3,8 +3,9 @@ import random
 class Draws:
     
     def __generate_draw(self, draw, round, max_round):
-        """Generate one possible draw according to the
-        distribution well known of the seeds.
+        """
+        Generate one possible draw according to the well known
+        distribution of the seeds.
 
         Parameters
         ----------

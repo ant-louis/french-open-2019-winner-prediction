@@ -6,33 +6,17 @@ import random
 import pandas as pd
 import numpy as np
 
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import cross_validate
+from sklearn import preprocessing
 from sklearn.model_selection import RandomizedSearchCV
-
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import roc_curve, auc
-
 from sklearn.externals import joblib
 
-from matplotlib.legend_handler import HandlerLine2D
-from matplotlib import pyplot as plt
 @contextmanager
 def measure_time(label):
     """
     Context manager to measure time of computation.
-    >>> with measure_time('Heavy computation'):
-    >>>     do_heavy_computation()
-    'Duration of [Heavy computation]: 0:04:07.765971'
-
-    Parameters
-    ----------
-    label: str
-        The label by which the computation will be referred
     """
     start = time.time()
     yield
@@ -43,25 +27,14 @@ def measure_time(label):
 def load_from_csv(path, delimiter=','):
     """
     Load csv file and return a NumPy array of its data
-
-    Parameters
-    ----------
-    path: str
-        The path to the csv file to load
-    delimiter: str (default: ',')
-        The csv field delimiter
-
-    Return
-    ------
-    D: array
-        The NumPy array of the data contained in the file
     """
     return pd.read_csv(path, delimiter=delimiter,dtype=float)
 
 def create_estimator():
-
+    """
+    """
     # Loading data
-    prefix = '/home/tom/Documents/Uliège/Big-Data-Project/Data_cleaning'
+    prefix = '../Data_cleaning'
     df = load_from_csv(os.path.join(prefix, 'training_matches_players.csv'))
 
     y = df['PlayerA Win'].values.squeeze()
@@ -107,14 +80,17 @@ def create_estimator():
 
 
 def tune_hyperparameter():
+    """
+    """
     # Loading data
-    prefix = '/home/tom/Documents/Uliège/Big-Data-Project/Data_cleaning'
-    df = load_from_csv(os.path.join(prefix, 'training_matches_players.csv'))
+    df = load_from_csv('../Data_cleaning/training_matches_players_diff.csv')
 
     y = df['PlayerA Win'].values.squeeze()
     toDrop = ['PlayerA Win','ID_PlayerA', 'ID_PlayerB'] #ID's skew results
     train_features = df.drop(columns=toDrop).columns
     X = df.drop(columns=toDrop).values.squeeze()  
+
+    # X = preprocessing.scale(X)
 
     #Hyperparameter tuning
     max_features = ['auto', 'sqrt']
@@ -146,7 +122,5 @@ def tune_hyperparameter():
 
 if __name__ == "__main__":
 
-    create_estimator()
-    # tune_hyperparameter()
-
-   
+    # create_estimator()
+    tune_hyperparameter()
