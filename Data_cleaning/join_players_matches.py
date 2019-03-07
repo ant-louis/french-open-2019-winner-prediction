@@ -106,7 +106,7 @@ players = pd.get_dummies(players, columns = hot_encode_player)
 
 #Write to csv
 players.to_csv("training_data/training_players.csv", index=False)
-matches.to_csv("training_data/training_matches.csv", index=False)
+all_matches.to_csv("training_data/training_matches.csv", index=False)
 
 
 #-------------------------------------------MERGING----------------------------------------------------------------------------------------------------#
