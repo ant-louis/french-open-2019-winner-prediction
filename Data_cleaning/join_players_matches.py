@@ -104,6 +104,10 @@ players['After Winning 1st Set'] = players['After Winning 1st Set'].str.rstrip('
 hot_encode_player = ['Plays', 'Favorite Surface']
 players = pd.get_dummies(players, columns = hot_encode_player)
 
+#Write to csv
+players.to_csv("training_data/training_players.csv", index=False)
+matches.to_csv("training_data/training_matches.csv", index=False)
+
 
 #-------------------------------------------MERGING----------------------------------------------------------------------------------------------------#
 #Merge players and matches, adding suffixes if necessary
@@ -131,8 +135,6 @@ for year in all_matches['Year'].unique():
 
     #Write to csv
     players_and_matches.to_csv("training_data/training_matches_players_{}.csv".format(year), index=False)
-    matches.to_csv("training_data/training_matches_{}.csv".format(year), index=False)
-    players.to_csv("training_data/training_players_{}.csv".format(year), index=False)
 
 # -----------------------------------------------DIFFERENCE---------------------------------------
 
