@@ -53,7 +53,7 @@ def createToPredictFile(seed_file, output_file):
     
     print("Creating prediction data from  {} and saving to {}...".format(seed_file, output_file))
 
-    players = pd.read_csv('../Data_cleaning/training_players.csv', dtype=object, encoding='utf-8')
+    players = pd.read_csv('../Data_cleaning/training_data/training_players.csv', dtype=object, encoding='utf-8')
     players.drop(players.columns[0], axis=1, inplace=True)
 
     #--------------------------------MATCHES ---------------------------------------------------------#
@@ -133,8 +133,6 @@ def createToPredictFile(seed_file, output_file):
 
     playerA_df = playerA_df.apply(pd.to_numeric)
     playerB_df = playerB_df.apply(pd.to_numeric)
-    playerA_df.to_csv('playerA_df',index=False)
-    playerB_df.to_csv('playerB_df',index=False)
 
     # Difference in stats between PlayerA and playerB
     players_diff = pd.DataFrame()
@@ -176,8 +174,6 @@ def createToPredictFile(seed_file, output_file):
     to_predict['Court_Outdoor'] = 1
     to_predict['Court_Indoor'] = 0
 
-
-
     # Convert ID's to numeric values and sort them
     to_predict = to_predict.apply(pd.to_numeric)
     to_predict.sort_values(by = ['ID_PlayerA','ID_PlayerB'],inplace=True)
@@ -185,7 +181,6 @@ def createToPredictFile(seed_file, output_file):
     # Export to csv
     to_predict.to_csv(output_file,index=False)
     print("Success !")
-
 
 
 #------------------------------------------------------Predicting--------------------------------------------
