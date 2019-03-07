@@ -11,3 +11,4 @@ chromedriver
 scrapedPlayerInfo/
 .DS_Store
 __pycache__/
+training_data/
