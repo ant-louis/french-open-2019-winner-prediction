@@ -129,11 +129,6 @@ players.to_csv("training_players.csv", index=False)
 
 # -----------------------------------------------DIFFERENCE---------------------------------------
 
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
-# #BEFORE PRINT
-# pp.pprint(cols)
-
 # Separating numeric columns from non numeric columns
 non_numeric_cols = [
   'ID_PlayerA',
@@ -220,7 +215,3 @@ players_and_matches_diff = pd.concat([players_and_matches[non_numeric_cols[:-1]]
 players_and_matches_diff.to_csv("training_matches_players_diff.csv", index=False)
 
 
-# AFTER PRINT
-all_cols= list(players_and_matches_diff.columns.values)
-
-pp.pprint(all_cols)
