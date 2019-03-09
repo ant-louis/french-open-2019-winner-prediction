@@ -27,11 +27,13 @@ dataset = np.matrix(np.shape(matches))
 
 for i in range(np.shape(matches)[0]):
     for j in range(np.shape(matches)[1]):
-        hist = matches[i,j]
-        wheight = 1
+        hist = 0
+        wheight = 0
         for k in range(i):
             if matches[i,'name'] == matches[k,'name']:
                 w = min(1, exp(matches[k,'date']-matches[i,'date']))
                 hist += w * matches[k,j]
                 wheight += w
+        if wheight == 0:
+            dataset[i,j] = matches[i,j]
         dataset[i,j] = hist/wheight
