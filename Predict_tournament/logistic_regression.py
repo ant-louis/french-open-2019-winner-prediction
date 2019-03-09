@@ -27,41 +27,21 @@ from matplotlib import pyplot as plt
 def measure_time(label):
     """
     Context manager to measure time of computation.
-    >>> with measure_time('Heavy computation'):
-    >>>     do_heavy_computation()
-    'Duration of [Heavy computation]: 0:04:07.765971'
-
-    Parameters
-    ----------
-    label: str
-        The label by which the computation will be referred
     """
     start = time.time()
     yield
     end = time.time()
-    print('Duration of [{}]: {}'.format(label,
-                                        datetime.timedelta(seconds=end-start)))
+    print('Duration of [{}]: {}'.format(label, datetime.timedelta(seconds=end-start)))
 
 def load_from_csv(path, delimiter=','):
     """
     Load csv file and return a NumPy array of its data
-
-    Parameters
-    ----------
-    path: str
-        The path to the csv file to load
-    delimiter: str (default: ',')
-        The csv field delimiter
-
-    Return
-    ------
-    D: array
-        The NumPy array of the data contained in the file
     """
     return pd.read_csv(path, delimiter=delimiter,dtype=float)
 
 def create_estimator():
-
+    """
+    """
     # Loading data
     prefix = '../Data_cleaning'
     df = load_from_csv(os.path.join(prefix, 'training_matches_players_diff.csv'))
@@ -84,6 +64,7 @@ def create_estimator():
         model.fit(X,y)
         joblib.dump(model, filename) 
 
+
     #feature_importances = pd.DataFrame(model.feature_importances_,
     #                                      index = train_features,
     #                                      columns=['importance']).sort_values('importance',ascending=False)
@@ -96,9 +77,11 @@ def create_estimator():
     print("=================================================================")
 
 def tune_hyperparameter():
+    """
+    """
     # Loading data
     prefix = '../Data_cleaning'
-    df = load_from_csv(os.path.join(prefix, 'training_matches_players.csv'))
+    df = load_from_csv(os.path.join(prefix, 'training_matches_players_diff.csv'))
 
     y = df['PlayerA Win'].values.squeeze()
     toDrop = ['PlayerA Win','ID_PlayerA', 'ID_PlayerB'] #ID's skew results
@@ -107,14 +90,7 @@ def tune_hyperparameter():
     X = preprocessing.scale(X)
 
     #Hyperparameter tuning
-    max_features = ['auto', 'sqrt']
-    max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
-    max_depth.append(None)
-    min_samples_split = [2, 5, 10]
-    min_samples_leaf = [1, 2, 4]
-    bootstrap = [True, False]
-
-    number_feature = [int(x) for x in np.linspace(1, 50, num = 2)]
+    number_feature = [int(x) for x in np.linspace(1, 50, num = 20)]
 
     # Create the random grid
     random_grid = {'n_features_to_select': number_feature}
@@ -123,7 +99,7 @@ def tune_hyperparameter():
     selector = RFE(model)
     rf_random = RandomizedSearchCV(estimator = selector, 
                                     param_distributions = random_grid, 
-                                    n_iter = 100, 
+                                    n_iter = 10, 
                                     cv = 3, 
                                     verbose=2, 
                                     random_state=42, 
