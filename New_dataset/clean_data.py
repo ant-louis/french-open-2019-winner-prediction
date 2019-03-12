@@ -16,7 +16,13 @@ to_drop = ['winner_seed',
             'loser_seed',
             'loser_entry',
             'match_num',
-            'score',]
+            'score',
+            'tourney_id',
+            'tourney_name',
+            'winner_name',
+            'loser_name',
+            'winner_ioc',
+            'loser_ioc']
 
 df.drop(columns=to_drop, inplace = True)
 
