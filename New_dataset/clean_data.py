@@ -32,5 +32,8 @@ df = pd.get_dummies(df)
 # Split the date
 df["tourney_date"] = df["tourney_date"].astype(str).str.slice(stop=4)
 
+#Change data type of all columns to int/float
+df = df.apply(pd.to_numeric) 
+
 # Save dataset
 df.to_csv('cleaned_data.csv', sep=',', encoding='utf-8', float_format='%.0f', decimal='.')
