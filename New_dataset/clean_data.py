@@ -4,11 +4,8 @@ df = pd.read_csv('all_games.csv',sep=',')
 
 # Keep only matches between the best 
 # 32 players at the moment
-cond1 = df['winner_rank'] < 33
-df = df[cond1]
-
-cond2 = df['loser_rank'] < 33
-df = df[cond2]
+df = df[df['winner_rank'] <= 32]
+df = df[df['loser_rank'] <= 32]
 
 # Drop columns
 to_drop = ['winner_seed',
@@ -31,6 +28,9 @@ df = df.dropna()
 
 # Convert into categorical data
 df = pd.get_dummies(df)
+
+# Split the date
+df["tourney_date"] = df["tourney_date"].astype(str).str.slice(stop=4)
 
 # Save dataset
 df.to_csv('cleaned_data.csv', sep=',', encoding='utf-8', float_format='%.0f', decimal='.')
