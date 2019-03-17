@@ -83,8 +83,8 @@ to_hot_encode = [
 # Convert into categorical data
 df = pd.get_dummies(df, columns = to_hot_encode)
 
-# Split the date
-df["tourney_date"] = df["tourney_date"].astype(str).str.slice(stop=4)
+# # Split the date
+# df["tourney_date"] = df["tourney_date"].astype(str).str.slice(stop=4)
 
 #Change data type of all columns to int/float
 # df = df.apply(pd.to_numeric) 
@@ -130,15 +130,18 @@ to_swapB = ['PlayerB_name',
             'PlayerB_hand_L',
 ]
 
-# Create a copy of the dataframe where we swap PlayerA and PlayerB
-# and merge the swapped set and the original set to get a a symmetric
-# dataset
-swapped_df = df.copy(deep=True)
-tmp = swapped_df[to_swapA].values
-swapped_df[to_swapA] = swapped_df[to_swapB].values
-swapped_df[to_swapB] = tmp
-swapped_df['PlayerA Win'] = 0
-df = pd.concat([df, swapped_df])
+# # Create a copy of the dataframe where we swap PlayerA and PlayerB
+# # and merge the swapped set and the original set to get a a symmetric
+# # dataset
+# swapped_df = df.copy(deep=True)
+# tmp = swapped_df[to_swapA].values
+# swapped_df[to_swapA] = swapped_df[to_swapB].values
+# swapped_df[to_swapB] = tmp
+# swapped_df['PlayerA Win'] = 0
+# df = pd.concat([df, swapped_df])
+
+# Reset index
+df.reset_index()
 
 # Save dataset
 df.to_csv('cleaned_data.csv', sep=',', encoding='utf-8', float_format='%.0f', decimal='.')
