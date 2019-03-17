@@ -1,12 +1,12 @@
 import pandas as pd
 
+
+# Read csv file
 df = pd.read_csv('all_games.csv',sep=',')
 
-# Keep only matches between the best 
-# 32 players at the moment
+# Keep only matches between the best 32 players at the moment
 df = df[df['winner_rank'] <= 32]
 df = df[df['loser_rank'] <= 32]
-
 
 # Drop columns
 to_drop = ['winner_seed',
@@ -19,7 +19,6 @@ to_drop = ['winner_seed',
             'tourney_name',
             'winner_ioc',
             'loser_ioc']
-
 df.drop(columns=to_drop, inplace = True)
 
 # Rename columns
@@ -83,65 +82,8 @@ to_hot_encode = [
 # Convert into categorical data
 df = pd.get_dummies(df, columns = to_hot_encode)
 
-# # Split the date
-# df["tourney_date"] = df["tourney_date"].astype(str).str.slice(stop=4)
-
-#Change data type of all columns to int/float
-# df = df.apply(pd.to_numeric) 
-
 #Classification output winner
 df["PlayerA Win"] = '1'
-
-
-to_swapA = ['PlayerA_name',
-            'PlayerA_id',
-            'PlayerA_height',
-            'PlayerA_age',
-            'PlayerA_rank',
-            'PlayerA_rank_points',
-            'PlayerA_ace',
-            'PlayerA_df',
-            'PlayerA_svpt',
-            'PlayerA_1stIn',
-            'PlayerA_1stWon',
-            'PlayerA_2ndWon',
-            'PlayerA_SvGms',
-            'PlayerA_bpSaved',
-            'PlayerA_bpFaced',
-            'PlayerA_hand_R',
-            'PlayerA_hand_L',
-]
-to_swapB = ['PlayerB_name',
-            'PlayerB_id',
-            'PlayerB_height',
-            'PlayerB_age',
-            'PlayerB_rank',
-            'PlayerB_rank_points',
-            'PlayerB_ace',
-            'PlayerB_df',
-            'PlayerB_svpt',
-            'PlayerB_1stIn',
-            'PlayerB_1stWon',
-            'PlayerB_2ndWon',
-            'PlayerB_SvGms',
-            'PlayerB_bpSaved',
-            'PlayerB_bpFaced',
-            'PlayerB_hand_R',
-            'PlayerB_hand_L',
-]
-
-# # Create a copy of the dataframe where we swap PlayerA and PlayerB
-# # and merge the swapped set and the original set to get a a symmetric
-# # dataset
-# swapped_df = df.copy(deep=True)
-# tmp = swapped_df[to_swapA].values
-# swapped_df[to_swapA] = swapped_df[to_swapB].values
-# swapped_df[to_swapB] = tmp
-# swapped_df['PlayerA Win'] = 0
-# df = pd.concat([df, swapped_df])
-
-# Reset index
-df.reset_index()
 
 # Save dataset
 df.to_csv('cleaned_data.csv', sep=',', encoding='utf-8', float_format='%.0f', decimal='.')

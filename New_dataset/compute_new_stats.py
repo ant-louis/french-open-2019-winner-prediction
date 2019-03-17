@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn import preprocessing
 
 
 # Read the csv file
@@ -15,7 +16,7 @@ df = df.drop('Unnamed: 0', axis=1)
 # Convert all numerical values to int
 df.iloc[:, 2:68] = df.iloc[:, 2:68].apply(pd.to_numeric, downcast='integer')
 
-# Split the date
+# Split the date and compute the day number
 df.rename(columns={'tourney_date': 'Year'}, inplace=True)
 df['Month'] = df["Year"].astype(str).str[4:6]
 df['Day'] = df["Year"].astype(str).str[6:8]
@@ -26,6 +27,8 @@ df['Day'] = df['Day'].astype(int)
 df['Month'] *= 30
 df['Day'] = df['Month'] + df['Day']
 df.drop(columns=['Month'], inplace = True)
+
+# Reorder columns
 cols = ['Year',
         'Day',
         'PlayerA_name',
@@ -97,16 +100,18 @@ cols = ['Year',
          'PlayerA Win']
 df = df[cols]
 
+# Create a copy of dataframe
+new_df = df.copy(deep=True)
+
 # Divide "best_of" and "minutes" variables
-df['PlayerA_bestof'] = df['best_of'].astype(float)
-df['PlayerB_bestof'] = df['best_of'].astype(float)
-df['PlayerA_minutes'] = df['minutes'].astype(float)
-df['PlayerB_minutes'] = df['minutes'].astype(float)
+new_df['PlayerA_bestof'] = df['best_of'].astype(float)
+new_df['PlayerB_bestof'] = df['best_of'].astype(float)
+new_df['PlayerA_minutes'] = df['minutes'].astype(float)
+new_df['PlayerB_minutes'] = df['minutes'].astype(float)
 
 # Columns of the players' stats
 playerA_cols = [0,1] + list(range(14,25))
 playerB_cols = [0,1] + [14,15] + list(range(25,34))
-
 
 # FOR EACH MATCH OF DATAFRAME
 for i, match in df.iterrows():
@@ -119,15 +124,14 @@ for i, match in df.iterrows():
     id_1 = match['PlayerA_id']
     
     # Take all past matches of that player looking for the id in playerA and playerB
-    playerA_rows = df.index[(df['PlayerA_id'] == id_1) & (df['Year'] + df['Day']/365 <= curr_year + curr_day/365)].tolist()
-    playerB_rows = df.index[(df['PlayerB_id'] == id_1) & (df['Year'] + df['Day']/365 <= curr_year + curr_day/365)].tolist()
+    playerA_rows = df.index[(df['PlayerA_id'] == id_1) & (df['Year'] + df['Day']/365 < curr_year + curr_day/365)].tolist()
+    playerB_rows = df.index[(df['PlayerB_id'] == id_1) & (df['Year'] + df['Day']/365 < curr_year + curr_day/365)].tolist()
     playerA_df = df.iloc[playerA_rows, playerA_cols]
     playerB_df = df.iloc[playerB_rows, playerB_cols]
     playerB_df.columns = list(playerA_df)
     tmp1_df = pd.concat([playerA_df,playerB_df], ignore_index=True)
     # If it is empty, continue
     if tmp1_df.empty:
-        count +=1
         continue
     
     # Compute a weight for each match
@@ -141,18 +145,18 @@ for i, match in df.iterrows():
     weighted1_df = pd.DataFrame(weighted_means.reshape(-1, len(weighted_means)), columns=list(tmp1_df.columns))
     weighted1_df = weighted1_df.drop('weight', axis=1)
     
-    # Replace new stats in original dataframe
-    df.at[i,16:25] = weighted1_df.iloc[0, 2:11]
-    df.at[i, 'PlayerA_bestof'] = weighted1_df['best_of']
-    df.at[i, 'PlayerA_minutes'] = weighted1_df['minutes']
+    # Add stats in new dataframe
+    new_df.at[i, 16:25] = weighted1_df.iloc[0, 2:11]
+    new_df.at[i, 'PlayerA_bestof'] = weighted1_df['best_of']
+    new_df.at[i, 'PlayerA_minutes'] = weighted1_df['minutes']
     
     
     # COMPUTE STATS OF PLAYER 2
     id_2 = match['PlayerB_id']
     
     # Take all past matches of that player looking for the id in playerA and playerB
-    playerA_rows = df.index[(df['PlayerA_id'] == id_2) & (df['Year'] + df['Day']/365 <= curr_year + curr_day/365)].tolist()
-    playerB_rows = df.index[(df['PlayerB_id'] == id_2) & (df['Year'] + df['Day']/365 <= curr_year + curr_day/365)].tolist()
+    playerA_rows = df.index[(df['PlayerA_id'] == id_2) & (df['Year'] + df['Day']/365 < curr_year + curr_day/365)].tolist()
+    playerB_rows = df.index[(df['PlayerB_id'] == id_2) & (df['Year'] + df['Day']/365 < curr_year + curr_day/365)].tolist()
     playerA_df = df.iloc[playerA_rows, playerA_cols]
     playerB_df = df.iloc[playerB_rows, playerB_cols]
     playerB_df.columns = list(playerA_df)
@@ -172,7 +176,7 @@ for i, match in df.iterrows():
     weighted2_df = pd.DataFrame(weighted_means.reshape(-1, len(weighted_means)), columns=list(tmp2_df.columns))
     weighted2_df = weighted2_df.drop('weight', axis=1)
     
-    # Replace new stats in original dataframe
+    # Add stats in new dataframe
     cols = ['best_of',
             'minutes',
             'PlayerB_ace',
@@ -185,25 +189,21 @@ for i, match in df.iterrows():
             'PlayerB_bpSaved',
             'PlayerB_bpFaced']
     weighted2_df.columns = cols
-    df.at[i, 25:34] = weighted2_df.iloc[0, 2:11]
-    df.at[i, 'PlayerB_bestof'] = weighted2_df['best_of']
-    df.at[i, 'PlayerB_minutes'] = weighted2_df['minutes']
+    new_df.at[i, 25:34] = weighted2_df.iloc[0, 2:11]
+    new_df.at[i, 'PlayerB_bestof'] = weighted2_df['best_of']
+    new_df.at[i, 'PlayerB_minutes'] = weighted2_df['minutes']
 
 # Reorder columns
-cols = ['Year',
+cols = ['PlayerA_name',
+        'PlayerB_name',
+        'Year',
         'Day',
         'PlayerA_id',
-        'PlayerA_name',
+        'PlayerB_id',
         'PlayerA_height',
         'PlayerA_age',
         'PlayerA_rank',
         'PlayerA_rank_points',
-        'PlayerB_id',
-        'PlayerB_name',
-        'PlayerB_height',
-        'PlayerB_age',
-        'PlayerB_rank',
-        'PlayerB_rank_points',
         'PlayerA_ace',
         'PlayerA_df',
         'PlayerA_svpt',
@@ -217,6 +217,10 @@ cols = ['Year',
         'PlayerA_bestof',
         'PlayerA_hand_L',
         'PlayerA_hand_R',
+        'PlayerB_height',
+        'PlayerB_age',
+        'PlayerB_rank',
+        'PlayerB_rank_points',
         'PlayerB_ace',
         'PlayerB_df',
         'PlayerB_svpt',
@@ -228,8 +232,8 @@ cols = ['Year',
         'PlayerB_bpFaced',
         'PlayerB_minutes',
         'PlayerB_bestof',
-        'PlayerA_hand_L',
-        'PlayerA_hand_R',
+        'PlayerB_hand_L',
+        'PlayerB_hand_R',
         'best_of',
         'minutes',
         'surface_Carpet',
@@ -263,7 +267,61 @@ cols = ['Year',
         'round_RR',
         'round_SF',
         'PlayerA Win']
-df = df[cols]
+new_df = new_df[cols]
+
+# Drop "minutes" feature (won't know that for predicting matches)
+new_df.drop(columns=['minutes'], inplace = True)
+
+# Standardize the data
+scaler = preprocessing.StandardScaler()
+new_df.iloc[:,6:20] = scaler.fit_transform(new_df.iloc[:,6:20]) # Data of playerA
+new_df.iloc[:,23:37] = scaler.fit_transform(new_df.iloc[:,23:37]) # Data of playerA
+
+# Create new dataframe where we swap PlayerA and PlayerB and then merge the swapped set
+# and the original set to get a a symmetric dataset
+to_swapA = ['PlayerA_name',
+            'PlayerA_id',
+            'PlayerA_height',
+            'PlayerA_age',
+            'PlayerA_rank',
+            'PlayerA_rank_points',
+            'PlayerA_ace',
+            'PlayerA_df',
+            'PlayerA_svpt',
+            'PlayerA_1stIn',
+            'PlayerA_1stWon',
+            'PlayerA_2ndWon',
+            'PlayerA_SvGms',
+            'PlayerA_bpSaved',
+            'PlayerA_bpFaced',
+            'PlayerA_hand_R',
+            'PlayerA_hand_L',
+]
+to_swapB = ['PlayerB_name',
+            'PlayerB_id',
+            'PlayerB_height',
+            'PlayerB_age',
+            'PlayerB_rank',
+            'PlayerB_rank_points',
+            'PlayerB_ace',
+            'PlayerB_df',
+            'PlayerB_svpt',
+            'PlayerB_1stIn',
+            'PlayerB_1stWon',
+            'PlayerB_2ndWon',
+            'PlayerB_SvGms',
+            'PlayerB_bpSaved',
+            'PlayerB_bpFaced',
+            'PlayerB_hand_R',
+            'PlayerB_hand_L',
+]
+swapped_df = new_df.copy(deep=True)
+tmp = swapped_df[to_swapA].values
+swapped_df[to_swapA] = swapped_df[to_swapB].values
+swapped_df[to_swapB] = tmp
+swapped_df['PlayerA Win'] = 0
+new_df = pd.concat([new_df, swapped_df])
+new_df.reset_index(inplace=True)
 
 # Save dataset
-df.to_csv('new_stats_data.csv', sep=',', encoding='utf-8', float_format='%.6f', decimal='.')
+new_df.to_csv('New_dataset/new_stats_data.csv', sep=',', encoding='utf-8', float_format='%.6f', decimal='.')
