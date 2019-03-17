@@ -104,17 +104,22 @@ df = df[cols]
 new_df = df.copy(deep=True)
 
 # Divide "best_of" and "minutes" variables
-new_df['PlayerA_bestof'] = df['best_of'].astype(float)
-new_df['PlayerB_bestof'] = df['best_of'].astype(float)
-new_df['PlayerA_minutes'] = df['minutes'].astype(float)
-new_df['PlayerB_minutes'] = df['minutes'].astype(float)
+new_df['PlayerA_bestof'] = 0.0
+new_df['PlayerB_bestof'] = 0.0
+new_df['PlayerA_minutes'] = 0.0
+new_df['PlayerB_minutes'] = 0.0
+# New variables for percentage of winning
+new_df['PlayerA_Win%'] = 0.0
+new_df['PlayerB_Win%'] = 0.0
 
 # Columns of the players' stats
 playerA_cols = [0,1] + list(range(14,25))
 playerB_cols = [0,1] + [14,15] + list(range(25,34))
 
+
 # FOR EACH MATCH OF DATAFRAME
 for i, match in df.iterrows():
+    print(i)
     
     # Get the current date of the match
     curr_year = match['Year']
@@ -124,12 +129,14 @@ for i, match in df.iterrows():
     id_1 = match['PlayerA_id']
     
     # Take all past matches of that player looking for the id in playerA and playerB
-    playerA_rows = df.index[(df['PlayerA_id'] == id_1) & (df['Year'] + df['Day']/365 < curr_year + curr_day/365)].tolist()
-    playerB_rows = df.index[(df['PlayerB_id'] == id_1) & (df['Year'] + df['Day']/365 < curr_year + curr_day/365)].tolist()
-    playerA_df = df.iloc[playerA_rows, playerA_cols]
-    playerB_df = df.iloc[playerB_rows, playerB_cols]
-    playerB_df.columns = list(playerA_df)
-    tmp1_df = pd.concat([playerA_df,playerB_df], ignore_index=True)
+    p1_playerA_rows = df.index[(df['PlayerA_id'] == id_1) & (df['Year'] + df['Day']/365 < curr_year + curr_day/365)].tolist()
+    p1_playerB_rows = df.index[(df['PlayerB_id'] == id_1) & (df['Year'] + df['Day']/365 < curr_year + curr_day/365)].tolist()
+    p1_playerA_df = df.iloc[p1_playerA_rows, playerA_cols]
+    p1_playerA_df['Win'] = 1
+    p1_playerB_df = df.iloc[p1_playerB_rows, playerB_cols]
+    p1_playerB_df['Win'] = 0
+    p1_playerB_df.columns = list(p1_playerA_df)
+    tmp1_df = pd.concat([p1_playerA_df,p1_playerB_df], ignore_index=True)
     # If it is empty, continue
     if tmp1_df.empty:
         continue
@@ -149,18 +156,21 @@ for i, match in df.iterrows():
     new_df.at[i, 16:25] = weighted1_df.iloc[0, 2:11]
     new_df.at[i, 'PlayerA_bestof'] = weighted1_df['best_of']
     new_df.at[i, 'PlayerA_minutes'] = weighted1_df['minutes']
+    new_df.at[i, 'PlayerA_Win%'] = weighted1_df['Win']
     
     
     # COMPUTE STATS OF PLAYER 2
     id_2 = match['PlayerB_id']
     
     # Take all past matches of that player looking for the id in playerA and playerB
-    playerA_rows = df.index[(df['PlayerA_id'] == id_2) & (df['Year'] + df['Day']/365 < curr_year + curr_day/365)].tolist()
-    playerB_rows = df.index[(df['PlayerB_id'] == id_2) & (df['Year'] + df['Day']/365 < curr_year + curr_day/365)].tolist()
-    playerA_df = df.iloc[playerA_rows, playerA_cols]
-    playerB_df = df.iloc[playerB_rows, playerB_cols]
-    playerB_df.columns = list(playerA_df)
-    tmp2_df = pd.concat([playerA_df,playerB_df], ignore_index=True)
+    p2_playerA_rows = df.index[(df['PlayerA_id'] == id_2) & (df['Year'] + df['Day']/365 < curr_year + curr_day/365)].tolist()
+    p2_playerB_rows = df.index[(df['PlayerB_id'] == id_2) & (df['Year'] + df['Day']/365 < curr_year + curr_day/365)].tolist()
+    p2_playerA_df = df.iloc[p2_playerA_rows, playerA_cols]
+    p2_playerA_df['Win'] = 1
+    p2_playerB_df = df.iloc[p2_playerB_rows, playerB_cols]
+    p2_playerB_df['Win'] = 0
+    p2_playerB_df.columns = list(p2_playerA_df)
+    tmp2_df = pd.concat([p2_playerA_df,p2_playerB_df], ignore_index=True)
     # If it is empty, continue
     if tmp2_df.empty:
         continue
@@ -187,11 +197,13 @@ for i, match in df.iterrows():
             'PlayerB_2ndWon',
             'PlayerB_SvGms',
             'PlayerB_bpSaved',
-            'PlayerB_bpFaced']
+            'PlayerB_bpFaced',
+            'Win']
     weighted2_df.columns = cols
     new_df.at[i, 25:34] = weighted2_df.iloc[0, 2:11]
     new_df.at[i, 'PlayerB_bestof'] = weighted2_df['best_of']
     new_df.at[i, 'PlayerB_minutes'] = weighted2_df['minutes']
+    new_df.at[i, 'PlayerB_Win%'] = weighted1_df['Win']
 
 # Reorder columns
 cols = ['PlayerA_name',
@@ -200,6 +212,7 @@ cols = ['PlayerA_name',
         'Day',
         'PlayerA_id',
         'PlayerB_id',
+        'PlayerA_Win%',
         'PlayerA_height',
         'PlayerA_age',
         'PlayerA_rank',
@@ -217,6 +230,7 @@ cols = ['PlayerA_name',
         'PlayerA_bestof',
         'PlayerA_hand_L',
         'PlayerA_hand_R',
+        'PlayerB_Win%',
         'PlayerB_height',
         'PlayerB_age',
         'PlayerB_rank',
@@ -274,13 +288,14 @@ new_df.drop(columns=['minutes'], inplace = True)
 
 # Standardize the data
 scaler = preprocessing.StandardScaler()
-new_df.iloc[:,6:20] = scaler.fit_transform(new_df.iloc[:,6:20]) # Data of playerA
-new_df.iloc[:,23:37] = scaler.fit_transform(new_df.iloc[:,23:37]) # Data of playerA
+new_df.iloc[:,7:21] = scaler.fit_transform(new_df.iloc[:,7:21]) # Data of playerA
+new_df.iloc[:,25:39] = scaler.fit_transform(new_df.iloc[:,25:39]) # Data of playerA
 
 # Create new dataframe where we swap PlayerA and PlayerB and then merge the swapped set
 # and the original set to get a a symmetric dataset
 to_swapA = ['PlayerA_name',
             'PlayerA_id',
+            'PlayerA_Win%',
             'PlayerA_height',
             'PlayerA_age',
             'PlayerA_rank',
@@ -294,11 +309,14 @@ to_swapA = ['PlayerA_name',
             'PlayerA_SvGms',
             'PlayerA_bpSaved',
             'PlayerA_bpFaced',
-            'PlayerA_hand_R',
+            'PlayerA_minutes',
+            'PlayerA_bestof',
             'PlayerA_hand_L',
-]
+            'PlayerA_hand_R']
+
 to_swapB = ['PlayerB_name',
             'PlayerB_id',
+            'PlayerB_Win%',
             'PlayerB_height',
             'PlayerB_age',
             'PlayerB_rank',
@@ -312,16 +330,30 @@ to_swapB = ['PlayerB_name',
             'PlayerB_SvGms',
             'PlayerB_bpSaved',
             'PlayerB_bpFaced',
-            'PlayerB_hand_R',
+            'PlayerB_minutes',
+            'PlayerB_bestof',
             'PlayerB_hand_L',
-]
-swapped_df = new_df.copy(deep=True)
-tmp = swapped_df[to_swapA].values
-swapped_df[to_swapA] = swapped_df[to_swapB].values
-swapped_df[to_swapB] = tmp
-swapped_df['PlayerA Win'] = 0
-new_df = pd.concat([new_df, swapped_df])
-new_df.reset_index(inplace=True)
+            'PlayerB_hand_R']
+
+idx = new_df.sample(frac=0.5, replace=False).index
+tmp = new_df.loc[idx, to_swapA]
+new_df.loc[idx, to_swapA] = new_df.loc[idx, to_swapB]
+new_df.loc[idx, to_swapB] = tmp
+new_df.loc[idx, 'PlayerA Win'] = 0
+
+# Difference in stats between PlayerA and playerB
+playerA_df = new_df.iloc[:,6:22]
+playerB_df = new_df.iloc[:,24:40]
+players_diff = pd.DataFrame()
+playerB_df.columns = list(playerA_df.columns) #Names of columns must be the same when subtracting
+players_diff[playerB_df.columns] = playerA_df.sub(playerB_df, axis = 'columns')
+
+#Updating column names
+column_names_diff = [s[8:] +'_diff' for s in list(playerA_df.columns)]
+players_diff.columns = column_names_diff
+
+# Concatenate differences with previous dataframe
+final_df = pd.concat([new_df.iloc[:,0:6],players_diff,new_df.iloc[:,40:]],axis=1)
 
 # Save dataset
-new_df.to_csv('New_dataset/new_stats_data.csv', sep=',', encoding='utf-8', float_format='%.6f', decimal='.')
+final_df.to_csv('New_dataset/new_stats_data.csv', sep=',', encoding='utf-8', float_format='%.6f', decimal='.')
