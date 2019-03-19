@@ -14,7 +14,6 @@ from sklearn.metrics import accuracy_score
 from sklearn.externals import joblib
 
 import warnings
-warnings.filterwarnings("ignore", category=FutureWarning)
 
 
 @contextmanager
@@ -48,26 +47,33 @@ def load_data(path, to_split=True, delimiter=',',selected_features = None):
     
     if to_split:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-        return X_train, X_test, y_train, y_test, selected_features
+        return X_train, X_test, y_train, y_test, np.asarray(selected_features)
     else:
-        return X, y, selected_features
+        return X, y, np.asarray(selected_features)
 
 
-def train_estimator(path, testFeatureImportance=False, to_split=True):
+def train_estimator(path, computeFeatureImportance=False, nb_features=48, to_split=True):
     """
     Train th model.
     """
     model = None
     
+
+    # For testing purposes
+    # Select the best features (ones with the most importance)
+    if not computeFeatureImportance:
+        features_df = pd.read_csv('feature_importance.csv', sep=',')
+        features_list = features_df.iloc[:nb_features, 0].tolist()
+
     # Load the training (and testing) set(s)
     if to_split:
-        X, X_test, y, y_test, train_features = load_data(path, to_split=to_split)
+        X, X_test, y, y_test, train_features = load_data(path, to_split=to_split, selected_features=features_list)
     else:
-        X, y, train_features = load_data(path, to_split=to_split)
+        X, y, train_features = load_data(path, to_split=to_split, selected_features=features_list)
 
     # Get the most important features
     print("Training... getting most important features")
-    if testFeatureImportance:
+    if computeFeatureImportance:
         ntry = 10
     else:
         ntry = 1
@@ -75,7 +81,7 @@ def train_estimator(path, testFeatureImportance=False, to_split=True):
     for n in range(ntry):
         with measure_time('Training...getting most important features'):
             print("N = ", n)
-            model = RandomForestClassifier(n_estimators=1000,
+            model = RandomForestClassifier(n_estimators=2000,
                                             min_samples_split=7,
                                             min_samples_leaf=2,
                                             max_features='auto',
@@ -88,7 +94,7 @@ def train_estimator(path, testFeatureImportance=False, to_split=True):
 
         feature_importance_total = np.add(feature_importance_total, np.array(model.feature_importances_).reshape(train_features.shape[0],1))
 
-    if testFeatureImportance:
+    if computeFeatureImportance:
         feature_importances = pd.DataFrame(feature_importance_total,
                                             index = train_features,
                                             columns=['importance'])
@@ -102,9 +108,10 @@ def train_estimator(path, testFeatureImportance=False, to_split=True):
     print("Training set accuracy: {}".format(accuracy_score(y, y_pred)))
     print("=================================================================")
     
-    # y_pred = model.predict(X_test)
-    # print("Test set accuracy: {}".format(accuracy_score(y_test, y_pred)))
-    # print("=================================================================")
+    if to_split:
+        y_pred = model.predict(X_test)
+        print("Test set accuracy: {}".format(accuracy_score(y_test, y_pred)))
+        print("=================================================================")
 
 
 def create_estimator(path, nb_features):
@@ -112,7 +119,7 @@ def create_estimator(path, nb_features):
     and on a select few features"""
 
     model = None
-    filename = "RandomForest_stats.pkl"
+    filename = "RandomForest_stats_12feat.pkl"
     features_df = pd.read_csv('feature_importance.csv', sep=',')
 
     # Select the best features (ones with the most importance)
@@ -120,7 +127,7 @@ def create_estimator(path, nb_features):
 
     X, y, _ = load_data(path, to_split=False, selected_features=features_list)
 
-    model = RandomForestClassifier(n_estimators=1000,
+    model = RandomForestClassifier(n_estimators=5000,
                                 min_samples_split=7,
                                 min_samples_leaf=2,
                                 max_features='auto',
@@ -176,19 +183,16 @@ def tune_hyperparameter(path):
     print("Best parameters", rf_random.best_params_)
     # Best parameters {'n_estimators': 1400, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': 'auto', 'max_depth': 40, 'bootstrap': False}
 
-def plot_feature_importance(nb_features):
+def plot_feature_importance(nb_features, filename):
+    """Plot the desired number of features along with their accuracy"""
+
     data = pd.read_csv('feature_importance.csv', sep=',')
 
-    #Number of features to choose
-    NBFEATURES = nb_features
-
-    feature = data.iloc[:NBFEATURES, 0].tolist()
-    importance = data.iloc[:NBFEATURES, 1].tolist()
-
-
+    feature = data.iloc[:nb_features, 0].tolist()
+    importance = data.iloc[:nb_features, 1].tolist()
 
     # Choose the position of each barplots on the x-axis (space=1,4,3,1)
-    x_pos = np.arange(0, NBFEATURES, 1)
+    x_pos = np.arange(0, nb_features, 1)
     
     # Create bars
     plt.figure() 
@@ -201,12 +205,14 @@ def plot_feature_importance(nb_features):
     plt.ylabel('Importance', fontsize=13)
     plt.xlabel('Feature', fontsize=13)
 
-    plt.savefig('importance.svg',format="svg")
+    plt.savefig(filename,format="svg")
 
 if __name__ == "__main__":
-    path = 'new_stats_data.csv'
+    warnings.filterwarnings("ignore", category=FutureWarning)
 
+    path = 'new_stats_data.csv'
     #tune_hyperparameter(path)
-    train_estimator(path, testFeatureImportance=True, to_split=False)
-    create_estimator(path, 16)
-    plot_feature_importance(16)
+    train_estimator(path, computeFeatureImportance=False, nb_features=12, to_split=True)
+    # create_estimator(path, 12)
+    # plot_feature_importance(48, 'all_features_importance.svg')
+    # plot_feature_importance(12, '12_features_importance.svg')
