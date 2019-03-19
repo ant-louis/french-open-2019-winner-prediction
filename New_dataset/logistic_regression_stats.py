@@ -57,7 +57,7 @@ def train(path, to_split=True):
     """
     Train th model.
     """
-    model = None
+    logit_model = None
     filename = "Logistic_regression_stats.pkl"
     
     # Load the training (and testing) set(s)
