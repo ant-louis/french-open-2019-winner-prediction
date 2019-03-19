@@ -139,8 +139,6 @@ def tune_hyperparameter(path):
     # Load the training set
     X, y, _ = load_data(path, to_split=False)
     
-    # Number of trees in random forest
-    n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]
     # Number of features to consider at every split
     max_features = ['auto', 'sqrt']
     # Maximum number of levels in tree
@@ -154,8 +152,7 @@ def tune_hyperparameter(path):
     bootstrap = [True, False]
     
     # Create the random grid
-    random_grid = {'n_estimators': n_estimators,
-                   'max_features': max_features,
+    random_grid = {'max_features': max_features,
                    'max_depth': max_depth,
                    'min_samples_split': min_samples_split,
                    'min_samples_leaf': min_samples_leaf,
