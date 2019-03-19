@@ -289,7 +289,7 @@ new_df.drop(columns=['minutes'], inplace = True)
 # Standardize the data
 scaler = preprocessing.StandardScaler()
 new_df.iloc[:,7:21] = scaler.fit_transform(new_df.iloc[:,7:21]) # Data of playerA
-new_df.iloc[:,25:39] = scaler.fit_transform(new_df.iloc[:,25:39]) # Data of playerA
+new_df.iloc[:,25:39] = scaler.fit_transform(new_df.iloc[:,25:39]) # Data of playerB
 
 # Create new dataframe where we swap PlayerA and PlayerB and then merge the swapped set
 # and the original set to get a a symmetric dataset
