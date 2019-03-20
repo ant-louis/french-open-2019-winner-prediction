@@ -4,7 +4,7 @@ from sklearn import preprocessing
 
 
 # Read the csv file
-df = pd.read_csv('Data/cleaned_data.csv', header=0)
+df = pd.read_csv('cleaned_data.csv', header=0)
 
 # Set tables reading options
 pd.set_option('display.max_columns', 500)
@@ -342,6 +342,10 @@ swapped_df.loc[idx, to_swapA] = swapped_df.loc[idx, to_swapB].values
 swapped_df.loc[idx, to_swapB] = tmp
 swapped_df.loc[idx, 'PlayerA Win'] = 0
 
+# Create a of the stats without difference
+standard_df = swapped_df.copy()
+standard_df.to_csv('new_stats_data_standard.csv', sep=',', encoding='utf-8', float_format='%.6f', decimal='.')
+
 # Difference in stats between PlayerA and playerB
 playerA_df = swapped_df.iloc[:,6:22]
 playerB_df = swapped_df.iloc[:,24:40]
@@ -357,4 +361,4 @@ players_diff.columns = column_names_diff
 final_df = pd.concat([swapped_df.iloc[:,0:6],players_diff,swapped_df.iloc[:,40:]],axis=1)
 
 # Save dataset
-final_df.to_csv('New_dataset/new_stats_data.csv', sep=',', encoding='utf-8', float_format='%.6f', decimal='.')
+final_df.to_csv('new_stats_data_diff.csv', sep=',', encoding='utf-8', float_format='%.6f', decimal='.')
