@@ -40,11 +40,9 @@ def parse_arguments():
     arguments, _ = parser.parse_known_args()
     return arguments
 
-
-def predictSeeds(input_file, seeds, output_file, modelName):
+def createFile(input_file, seeds_file):
     data = pd.read_csv(input_file, encoding='utf-8')
-    seeds_df = pd.read_csv(seeds, encoding='utf-8')
-    seeds_player_stats = pd.DataFrame()
+    seeds_df = pd.read_csv(seeds_file, encoding='utf-8')
     playerA_df = pd.DataFrame()
     playerB_df = pd.DataFrame()
 
@@ -267,7 +265,6 @@ def predictSeeds(input_file, seeds, output_file, modelName):
         'Player_hand_R_PlayerB': 'PlayerB_hand_R',
 
     }
-
     to_predict.rename(columns=to_rename, inplace=True)
 
     # Reorder columns
@@ -357,37 +354,43 @@ def predictSeeds(input_file, seeds, output_file, modelName):
     print([x for x in data_diff.columns if x not in to_predict.columns])
     # Should print ['Unnamed: 0', 'Year', 'Day', 'PlayerA_id', 'PlayerB_id', 'PlayerA Win']
 
-    to_predict.to_csv('to_predict.csv', index=False, sep=',', encoding='utf-8', float_format='%.6f', decimal='.')
-            
+    to_predict.to_csv(output_file, index=False, sep=',', encoding='utf-8', float_format='%.6f', decimal='.')
 
-    # seeds_player_stats_without_id = seeds_player_stats.drop(columns=['ID_PlayerA', 'ID_PlayerB'],inplace=False)
-    # y_pred_proba = None
 
-    # # Import model, predict output, extract probabilities
-    # if(os.path.isfile(modelName)):
-    #     print("Predicting from {}... using the model {}".format(input_file, modelName))
-    #     model = joblib.load(modelName)
-    #     y_pred_proba = model.predict_proba(seeds_player_stats_without_id)
-    # else:
-    #     print("No estimator found. Exiting...")
-    #     exit()
+def predictSeeds(input_file, output_file, modelName, selected_features=None):
 
-    # # Creating the prediction result
-    # print("Assembling prediction and saving to {}...".format(output_file))
-    # prediction = pd.DataFrame()
-    # prediction['ID_PlayerA'] = seeds_player_stats['ID_PlayerA']
-    # prediction['ID_PlayerB'] = seeds_player_stats['ID_PlayerB']
+    df = pd.read_csv(input_file, delimiter=',', encoding='utf-8')
 
-    # prediction['WinnerA_proba'] = y_pred_proba[:,0]
-    # prediction['WinnerB_proba'] = y_pred_proba[:,1]
-    # # for i,y in enumerate(y_pred):
-    # #     if y == 0:
-    # #         prediction.iloc[i,2] = seeds_player_stats.iloc[i ,1]
-    # #     elif y == 1:
-    # #         prediction.iloc[i,2] = seeds_player_stats.iloc[i, 0]
+    # If no features selected by the user
+    if not selected_features:
+        # Take all numerical features
+        df = df.iloc[:,4:]
+        selected_features = df.columns
 
-    # prediction.to_csv(output_file,index=False)
-    # print("Success !")
+    X = df[selected_features].values.squeeze()
+    
+    y_pred_proba = None
+
+    # Import model, predict output, extract probabilities
+    if(os.path.isfile(modelName)):
+        print("Predicting from {}... using the model {}".format(input_file, modelName))
+        model = joblib.load(modelName)
+        y_pred_proba = model.predict_proba(X)
+    else:
+        print("No estimator found. Exiting...")
+        exit()
+
+    # Creating the prediction result
+    print("Assembling prediction and saving to {}...".format(output_file))
+    prediction = pd.DataFrame()
+    prediction['Rank_A'] = df['Rank_A']
+    prediction['Rank_B'] = df['Rank_B']
+
+    prediction['WinnerA_proba'] = y_pred_proba[:,0]
+    prediction['WinnerB_proba'] = y_pred_proba[:,1]
+
+    prediction.to_csv(output_file,index=False)
+    print("Success !")
 
 if __name__=='__main__':
 
@@ -397,8 +400,15 @@ if __name__=='__main__':
     # output_file = args.outputFile
     # model_name = args.model
 
-    input_file = 'new_stats_data_standard.csv'
-    output_file = 'matches_2018_stats.csv'
-    model_name = 'RandomForest_stats_12feat.pkl'
+    input_file = 'to_predict.csv'
+    output_file = 'matches_2018_prediction_14.csv'
+    model_name = 'RandomForest_stats_14feat.pkl'
     seeds = 'seeds_2018.csv'
-    predictSeeds(input_file, seeds, output_file, model_name)
+    # createFile('new_stats_data_standard.csv', seeds)
+
+    # Select the best features (ones with the most importance)
+    NBFEATURES = 14
+    features_df = pd.read_csv('feature_importance.csv', sep=',')
+    features_list = features_df.iloc[:NBFEATURES, 0].tolist()
+
+    predictSeeds(input_file, output_file , model_name, features_list)
