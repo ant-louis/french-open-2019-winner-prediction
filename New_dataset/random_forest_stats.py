@@ -34,7 +34,9 @@ def load_data(path, to_split=True, delimiter=',',selected_features = None):
     df = pd.read_csv(path, delimiter=delimiter)
     y = df['PlayerA Win'].values.squeeze()
 
-    df = df.drop(columns=['PlayerA Win'])
+    df.drop(columns=['PlayerA Win'], inplace=True)
+    df.drop(columns=['bestof_diff'], inplace=True)# Overfitting feature
+
 
     # If no features selected by the user
     if not selected_features:
@@ -42,8 +44,7 @@ def load_data(path, to_split=True, delimiter=',',selected_features = None):
         df = df.iloc[:,8:]
         selected_features = df.columns
 
-    df = df[selected_features]
-    X = df.values.squeeze()
+    X = df[selected_features].values.squeeze()
     
     if to_split:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
@@ -54,13 +55,13 @@ def load_data(path, to_split=True, delimiter=',',selected_features = None):
 
 def train_estimator(path, computeFeatureImportance=False, nb_features=48, to_split=True):
     """
-    Train th model.
+    Train the model.
     """
     model = None
-    
-
+    features_list = None
     # For testing purposes
     # Select the best features (ones with the most importance)
+    # If we want to compute the feature importance, we obviously use all of them
     if not computeFeatureImportance:
         features_df = pd.read_csv('feature_importance.csv', sep=',')
         features_list = features_df.iloc[:nb_features, 0].tolist()
@@ -72,15 +73,15 @@ def train_estimator(path, computeFeatureImportance=False, nb_features=48, to_spl
         X, y, train_features = load_data(path, to_split=to_split, selected_features=features_list)
 
     # Get the most important features
-    print("Training... getting most important features")
     if computeFeatureImportance:
+        print("Computing feature importance!")
         ntry = 10
     else:
+        print("Training the model!")
         ntry = 1
     feature_importance_total = np.zeros((train_features.shape[0],1))
     for n in range(ntry):
-        with measure_time('Training...getting most important features'):
-            print("N = ", n)
+        with measure_time('Training {} out of {}'.format(n+1, ntry)):
             model = RandomForestClassifier(n_estimators=2000,
                                             min_samples_split=7,
                                             min_samples_leaf=2,
@@ -94,6 +95,7 @@ def train_estimator(path, computeFeatureImportance=False, nb_features=48, to_spl
 
         feature_importance_total = np.add(feature_importance_total, np.array(model.feature_importances_).reshape(train_features.shape[0],1))
 
+    # Only compute the features importance if we actually want to compute it
     if computeFeatureImportance:
         feature_importances = pd.DataFrame(feature_importance_total,
                                             index = train_features,
@@ -104,10 +106,13 @@ def train_estimator(path, computeFeatureImportance=False, nb_features=48, to_spl
         feature_importances.sort_values('importance',ascending=False, inplace=True)
         feature_importances.to_csv("feature_importance.csv")
 
+    print("Predicting!")
     y_pred = model.predict(X)
+    print("=================================================================")
     print("Training set accuracy: {}".format(accuracy_score(y, y_pred)))
     print("=================================================================")
     
+    # If we do a train test split, predict on the test set
     if to_split:
         y_pred = model.predict(X_test)
         print("Test set accuracy: {}".format(accuracy_score(y_test, y_pred)))
@@ -119,7 +124,7 @@ def create_estimator(path, nb_features):
     and on a select few features"""
 
     model = None
-    filename = "RandomForest_stats_12feat.pkl"
+    filename = "RandomForest_stats_{}feat.pkl".format(nb_features)
     features_df = pd.read_csv('feature_importance.csv', sep=',')
 
     # Select the best features (ones with the most importance)
@@ -127,6 +132,7 @@ def create_estimator(path, nb_features):
 
     X, y, _ = load_data(path, to_split=False, selected_features=features_list)
 
+    print("Creating estimator on dataset with {} best features".format(nb_features))
     model = RandomForestClassifier(n_estimators=5000,
                                 min_samples_split=7,
                                 min_samples_leaf=2,
@@ -138,6 +144,7 @@ def create_estimator(path, nb_features):
                                 n_jobs=-1)
     model.fit(X, y)
     joblib.dump(model, filename)
+    print("Saving model as ", filename)
 
 def tune_hyperparameter(path):
     """
@@ -210,9 +217,11 @@ def plot_feature_importance(nb_features, filename):
 if __name__ == "__main__":
     warnings.filterwarnings("ignore", category=FutureWarning)
 
-    path = 'new_stats_data.csv'
+    path = 'new_stats_data_diff.csv'
     #tune_hyperparameter(path)
-    train_estimator(path, computeFeatureImportance=False, nb_features=12, to_split=True)
-    # create_estimator(path, 12)
-    # plot_feature_importance(48, 'all_features_importance.svg')
-    # plot_feature_importance(12, '12_features_importance.svg')
+    # train_estimator(path, computeFeatureImportance=False, nb_features=14, to_split=True)
+    create_estimator(path, 14)
+    # create_estimator(path, 6)
+    # plot_feature_importance(47, 'all_features_importance.svg')
+    # plot_feature_importance(14, '14_features_importance.svg')
+    # plot_feature_importance(5, '5_features_importance.svg')

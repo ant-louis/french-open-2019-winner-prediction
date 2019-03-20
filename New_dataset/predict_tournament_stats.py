@@ -72,7 +72,7 @@ if __name__ == '__main__':
     results = predicator.predict(100000)
 
 
-    print("Winning probabilities wrt. seed rank with filename {}:".format(matches_file))
+    print("Winning probabilities wrt. seed rank with filename '{}':".format(matches_file))
     indices = np.argsort(-results) # Minus in front to sort by descending
     print("Seed rank \t Probability")
     for i in indices:

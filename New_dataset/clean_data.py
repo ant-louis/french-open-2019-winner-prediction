@@ -58,7 +58,7 @@ to_rename={'winner_name': 'PlayerA_name',
 df.rename(columns=to_rename, inplace=True)
 
 ## Number of rows missing that column value
-## 600 < 0.01 * 60000 -> fill in with average
+## 600 < 0.01 * 60000 -> fill in with average (or mode)
 # surface              3
 # PlayerA_height      83
 # PlayerB_height     117
@@ -81,19 +81,19 @@ df.rename(columns=to_rename, inplace=True)
 # PlayerB_SvGms      605
 # PlayerB_bpSaved    605
 # PlayerB_bpFaced    605
-
+df['surface'] = df['surface'].fillna(value={'surface': df['surface'].mode})
 df = df.fillna(df.mean())
 
 #Upper case and normalize names
 df['PlayerA_name'] = df['PlayerA_name'].str.normalize('NFD').str.upper()
 df['PlayerB_name'] = df['PlayerB_name'].str.normalize('NFD').str.upper()
 
-# #Move player names to the front
-# cols = list(df.columns.values)
-# cols.pop(cols.index('PlayerA_name')) 
-# cols.pop(cols.index('PlayerB_name')) 
-# #Create new dataframe with columns in the order you want
-# df = df[['PlayerA_name', 'PlayerB_name'] + cols] 
+#Move player names to the front
+cols = list(df.columns.values)
+cols.pop(cols.index('PlayerA_name')) 
+cols.pop(cols.index('PlayerB_name')) 
+#Create new dataframe with columns in the order you want
+df = df[['PlayerA_name', 'PlayerB_name'] + cols] 
 
 to_hot_encode = [
     'surface', 
