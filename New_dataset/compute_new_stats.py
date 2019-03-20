@@ -342,13 +342,13 @@ swapped_df.loc[idx, to_swapA] = swapped_df.loc[idx, to_swapB].values
 swapped_df.loc[idx, to_swapB] = tmp
 swapped_df.loc[idx, 'PlayerA Win'] = 0
 
-# Create a of the stats without difference
+# Create a version of the stats without difference
 standard_df = swapped_df.copy()
 standard_df.to_csv('new_stats_data_standard.csv', sep=',', encoding='utf-8', float_format='%.6f', decimal='.')
 
 # Difference in stats between PlayerA and playerB
-playerA_df = swapped_df.iloc[:,6:22]
-playerB_df = swapped_df.iloc[:,24:40]
+playerA_df = swapped_df.iloc[:,6:24]
+playerB_df = swapped_df.iloc[:,24:42]
 players_diff = pd.DataFrame()
 playerB_df.columns = list(playerA_df.columns) #Names of columns must be the same when subtracting
 players_diff[playerB_df.columns] = playerA_df.sub(playerB_df, axis = 'columns')
@@ -358,7 +358,7 @@ column_names_diff = [s[8:] +'_diff' for s in list(playerA_df.columns)]
 players_diff.columns = column_names_diff
 
 # Concatenate differences with previous dataframe
-final_df = pd.concat([swapped_df.iloc[:,0:6],players_diff,swapped_df.iloc[:,40:]],axis=1)
+final_df = pd.concat([swapped_df.iloc[:,0:6],players_diff,swapped_df.iloc[:,42:]],axis=1)
 
 # Save dataset
 final_df.to_csv('new_stats_data_diff.csv', sep=',', encoding='utf-8', float_format='%.6f', decimal='.')
