@@ -31,38 +31,43 @@ def load_data(path, to_split=True, delimiter=',',selected_features = None):
     """
     Load the csv file and returns (X,y).
     """
-    df = pd.read_csv(path, delimiter=delimiter)
-    y = df['PlayerA Win'].values.squeeze()
-
-    df = df.drop(columns=['PlayerA Win'])
+    all_df = pd.read_csv(path, delimiter=delimiter)
+    # Sorting because we don't want to predict the past matches with data about the future
+    all_df.sort_values(by=['Year', 'Day'], inplace=True)
+    y = all_df['PlayerA Win'].values.squeeze()
+    all_df.drop('PlayerA Win', axis=1, inplace=True)
 
     # If no features selected by the user
-    if not selected_features:
+    if selected_features is None:
         # Take all numerical features
-        df = df.iloc[:,8:]
-        selected_features = df.columns
+        selected_features = all_df.iloc[:,8:].columns.tolist()
 
-    df = df[selected_features]
-    X = df.values.squeeze()
-    
+    X = all_df[selected_features].values.squeeze()
+
+    print("Selected features :", selected_features)
+    # Shuffle is False because we don't want to predict the past matches with data about the future
+    X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2, shuffle=False)
+
     if to_split:
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-        return X_train, X_test, y_train, y_test, selected_features
+        return X_train, X_test, y_train, y_test, np.asarray(selected_features)
     else:
-        return X, y, selected_features
+        return X, y, np.asarray(selected_features)
 
 
 
-def train(path, to_split=True):
+def train(path, nb_features, to_split=True):
     """
-    Train th model.
+    Train the model.
     """
     logit_model = None
+    features_df = pd.read_csv('feature_importance.csv', sep=',')
+    features_list = features_df.iloc[:nb_features, 0].tolist()
+
     filename = "Logistic_regression_stats.pkl"
     
     # Load the training (and testing) set(s)
     if to_split:
-        X_train, X_test, y_train, y_test, _ = load_data(path, to_split=to_split)
+        X_train, X_test, y_train, y_test, _ = load_data(path, to_split=to_split, selected_features=features_list)
     else:
         X, y, _ = load_data(path, to_split=to_split)
 
@@ -70,7 +75,6 @@ def train(path, to_split=True):
 
     with measure_time('Training...'):
         logit_model = LogisticRegression(random_state=42)
-
         logit_model.fit(X_train, y_train)
         joblib.dump(logit_model, filename) 
         
@@ -79,10 +83,12 @@ def train(path, to_split=True):
     print("Logistic Regression Training set accuracy: {}".format(accuracy_score(y_train, y_pred)))
     print("=================================================================")
     
-    y_pred = logit_model.predict(X_test)
-    print("Logistic Regression Test set accuracy: {}".format(accuracy_score(y_test, y_pred)))
-    print("=================================================================")
+    if to_split:
+        y_pred = logit_model.predict(X_test)
+        print("Logistic Regression Test set accuracy: {}".format(accuracy_score(y_test, y_pred)))
+        print("=================================================================")
     
 if __name__ == "__main__":
-    path = 'new_stats_data.csv'
-    train(path, to_split=True)
+    path = 'new_stats_data_diff.csv'
+    train(path, nb_features=5, to_split=True)
+

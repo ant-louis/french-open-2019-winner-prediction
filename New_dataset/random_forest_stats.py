@@ -31,23 +31,25 @@ def load_data(path, to_split=True, delimiter=',',selected_features = None):
     """
     Load the csv file and returns (X,y).
     """
-    df = pd.read_csv(path, delimiter=delimiter)
-    y = df['PlayerA Win'].values.squeeze()
-
-    df.drop(columns=['PlayerA Win'], inplace=True)
-    df.drop(columns=['bestof_diff'], inplace=True)# Overfitting feature
-
+    all_df = pd.read_csv(path, delimiter=delimiter)
+    # Sorting because we don't want to predict the past matches with data about the future
+    all_df.sort_values(by=['Year', 'Day'], inplace=True)
+    y = all_df['PlayerA Win'].values.squeeze()
+    all_df.drop('PlayerA Win', axis=1, inplace=True)
+    all_df.drop('bestof_diff', axis=1, inplace=True) # Overfitting feature
 
     # If no features selected by the user
-    if not selected_features:
+    if selected_features is None:
         # Take all numerical features
-        df = df.iloc[:,8:]
-        selected_features = df.columns
+        selected_features = all_df.iloc[:,8:].columns.tolist()
 
-    X = df[selected_features].values.squeeze()
-    
+    X = all_df[selected_features].values.squeeze()
+    print("Selected features :", selected_features)
+
+    # Shuffle is False because we don't want to predict the past matches with data about the future
+    X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2, shuffle=False)
+
     if to_split:
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
         return X_train, X_test, y_train, y_test, np.asarray(selected_features)
     else:
         return X, y, np.asarray(selected_features)
@@ -56,6 +58,9 @@ def load_data(path, to_split=True, delimiter=',',selected_features = None):
 def train_estimator(path, computeFeatureImportance=False, nb_features=48, to_split=True):
     """
     Train the model.
+    If computeFeatureImportance is True, to_split must be True too. We don't want
+    to contaminate our test_set by doing a feature extraction on it and then
+    testing on it. 
     """
     model = None
     features_list = None
@@ -72,7 +77,7 @@ def train_estimator(path, computeFeatureImportance=False, nb_features=48, to_spl
     else:
         X, y, train_features = load_data(path, to_split=to_split, selected_features=features_list)
 
-    # Get the most important features
+    # Get the most important features and/or train
     if computeFeatureImportance:
         print("Computing feature importance!")
         ntry = 10
@@ -89,7 +94,6 @@ def train_estimator(path, computeFeatureImportance=False, nb_features=48, to_spl
                                             max_depth=10, 
                                             bootstrap=False,
                                             random_state=42,
-                                            verbose=1,
                                             n_jobs=-1)
             model.fit(X, y)
 
@@ -217,11 +221,17 @@ def plot_feature_importance(nb_features, filename):
 if __name__ == "__main__":
     warnings.filterwarnings("ignore", category=FutureWarning)
 
-    path = 'new_stats_data_diff.csv'
-    #tune_hyperparameter(path)
+
+    path = "new_stats_data_diff.csv"
+
+    # tune_hyperparameter(path)
+    # train_estimator(path, computeFeatureImportance=False, nb_features=48, to_split=True)
+    # train_estimator(path, computeFeatureImportance=False, nb_features=4, to_split=True)
+    # train_estimator(path, computeFeatureImportance=False, nb_features=5, to_split=True)
+    # train_estimator(path, computeFeatureImportance=False, nb_features=6, to_split=True)
+    # train_estimator(path, computeFeatureImportance=False, nb_features=7, to_split=True)
     # train_estimator(path, computeFeatureImportance=False, nb_features=14, to_split=True)
-    create_estimator(path, 14)
-    # create_estimator(path, 6)
-    # plot_feature_importance(47, 'all_features_importance.svg')
+    create_estimator(path, 5)
+    # plot_feature_importance(48, 'all_features_importance.svg')
     # plot_feature_importance(14, '14_features_importance.svg')
     # plot_feature_importance(5, '5_features_importance.svg')
