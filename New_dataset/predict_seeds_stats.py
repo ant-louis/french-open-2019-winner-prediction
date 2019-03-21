@@ -401,13 +401,14 @@ if __name__=='__main__':
     # model_name = args.model
 
     input_file = 'to_predict.csv'
-    output_file = 'matches_2018_prediction_14.csv'
-    model_name = 'RandomForest_stats_14feat.pkl'
+    output_file = 'RandomForest_5_pred.csv'
+    # model_name = 'RandomForest_stats_5feat.pkl'
+    model_name = 'RandomForest_stats_5feat.pkl'
     seeds = 'seeds_2018.csv'
     # createFile('new_stats_data_standard.csv', seeds)
 
     # Select the best features (ones with the most importance)
-    NBFEATURES = 14
+    NBFEATURES = 5
     features_df = pd.read_csv('feature_importance.csv', sep=',')
     features_list = features_df.iloc[:NBFEATURES, 0].tolist()
 
