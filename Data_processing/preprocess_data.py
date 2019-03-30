@@ -16,11 +16,6 @@ df.iloc[:, 7:] = df.iloc[:, 7:].apply(pd.to_numeric, downcast='float')
 df = df[df['round'] != 'RR']
 df = df[df['round'] != 'BR']
 
-# New feature "Same_handedness"
-df['Same_handedness'] = np.where(df.PlayerA_righthanded == df.PlayerB_righthanded, 1., 0.)
-df.drop(columns=['PlayerA_righthanded'], inplace = True)
-df.drop(columns=['PlayerB_righthanded'], inplace = True)
-
 # Compute new features for PlayerA
 df['PlayerA_svpt%'] = (df.PlayerA_svpt + df.PlayerA_ace + df.PlayerA_df)/((df.PlayerA_svpt + df.PlayerA_ace + df.PlayerA_df) + (df.PlayerB_svpt + df.PlayerB_ace + df.PlayerB_df))
 df['PlayerA_1st_serve%'] = df.PlayerA_1stIn/df.PlayerA_svpt
@@ -28,7 +23,7 @@ df['PlayerA_1st_serve_won%'] = df.PlayerA_1stWon/df.PlayerA_1stIn
 df['PlayerA_2nd_serve_won%'] = df.PlayerA_2ndWon/(df.PlayerA_svpt - df.PlayerA_1stIn)
 df['PlayerA_ace%'] = df.PlayerA_ace/(df.PlayerA_svpt + df.PlayerA_ace + df.PlayerA_df)
 df['PlayerA_df%'] = df.PlayerA_df/(df.PlayerA_svpt + df.PlayerA_ace + df.PlayerA_df)
-df['PlayerA_bp_faced%'] = df.PlayerA_bpFaced/df.PlayerA_svpt
+df['PlayerA_bp_faced%'] = df.PlayerA_bpFaced/(df.PlayerA_svpt + df.PlayerA_ace + df.PlayerA_df)
 df['PlayerA_bp_saved%'] = df.PlayerA_bpSaved/df.PlayerA_bpFaced
 
 # Compute new features for PlayerB
@@ -38,7 +33,7 @@ df['PlayerB_1st_serve_won%'] = df.PlayerB_1stWon/df.PlayerB_1stIn
 df['PlayerB_2nd_serve_won%'] = df.PlayerB_2ndWon/(df.PlayerB_svpt - df.PlayerB_1stIn)
 df['PlayerB_ace%'] = df.PlayerB_ace/(df.PlayerB_svpt + df.PlayerB_ace + df.PlayerB_df)
 df['PlayerB_df%'] = df.PlayerB_df/(df.PlayerB_svpt + df.PlayerB_ace + df.PlayerB_df)
-df['PlayerB_bp_faced%'] = df.PlayerB_bpFaced/df.PlayerB_svpt
+df['PlayerB_bp_faced%'] = df.PlayerB_bpFaced/(df.PlayerB_svpt + df.PlayerB_ace + df.PlayerB_df)
 df['PlayerB_bp_saved%'] = df.PlayerB_bpSaved/df.PlayerB_bpFaced
 
 # Convert NaN because of "bpFaced" that might b equal to 0
@@ -88,7 +83,8 @@ cols = ['PlayerA_name',
         'PlayerB_id',
         'PlayerA_FR',
         'PlayerB_FR',
-        'Same_handedness',
+        'PlayerA_righthanded',
+        'PlayerB_righthanded',
          'PlayerA_height',
          'PlayerA_age',
          'PlayerA_rank',
