@@ -39,13 +39,13 @@ def load_data(path, to_split=True,selected_features=None):
 
     # If no features selected by the user, take all numerical features
     if selected_features is None:
-        selected_features = df.iloc[:,11:27].columns.tolist()
+        selected_features = df.iloc[:,10:25].columns.tolist()
 
     X = df[selected_features].values.squeeze()
     print("Selected features :", selected_features)
 
     # Shuffle is False because we don't want to predict the past matches with data about the future
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, shuffle=False)
 
     if to_split:
         return X_train, X_test, y_train, y_test, np.asarray(selected_features)
@@ -216,6 +216,6 @@ if __name__ == "__main__":
 
     path = "Data/training_diff_data.csv"
 
-    #tune_hyperparameter(path)
-    train_estimator(path, computeFeatureImportance=False, to_split=True)
+    tune_hyperparameter(path)
+    #train_estimator(path, computeFeatureImportance=False, to_split=True)
     
