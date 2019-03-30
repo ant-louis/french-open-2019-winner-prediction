@@ -1,9 +1,8 @@
 import pandas as pd
 
-
 # Set tables reading options
 pd.set_option('display.max_columns', 500)
-pd.set_option('display.max_rows', 100)
+pd.set_option('display.max_rows', 2000)
 
 # Read csv file
 df = pd.read_csv('Data/all_games.csv',sep=',')
@@ -17,8 +16,7 @@ to_drop = ['tourney_id',
            'winner_entry',
            'loser_seed',
            'loser_entry',
-           'score',
-           'round']
+          'score']
 df.drop(columns=to_drop, inplace = True)
 
 # Rename columns
@@ -105,11 +103,14 @@ cols = ['PlayerA_name',
         'Day',
         'best_of',
         'draw_size',
+        'round',
         'minutes',
         'PlayerA_id',
         'PlayerB_id',
         'PlayerA_FR',
+        'PlayerB_FR',
         'PlayerA_righthanded',
+        'PlayerB_righthanded',
          'PlayerA_height',
          'PlayerA_age',
          'PlayerA_rank',
@@ -123,8 +124,6 @@ cols = ['PlayerA_name',
          'PlayerA_SvGms',
          'PlayerA_bpSaved',
          'PlayerA_bpFaced',
-        'PlayerB_FR',
-        'PlayerB_righthanded',
          'PlayerB_height',
          'PlayerB_age',
          'PlayerB_rank',
@@ -145,8 +144,20 @@ cols = ['PlayerA_name',
         'surface_Hard']
 df = df[cols]
 
+# Drop rows with no data
+df = df[(df.PlayerA_svpt != 0) &
+         (df.PlayerA_1stIn != 0) &
+         (df.PlayerA_1stWon != 0) &
+         (df.PlayerA_2ndWon != 0) &
+         (df.PlayerA_SvGms != 0)]
+df = df[(df.PlayerB_svpt != 0) &
+         (df.PlayerB_1stIn != 0) &
+         (df.PlayerB_1stWon != 0) &
+         (df.PlayerB_2ndWon != 0) &
+         (df.PlayerB_SvGms != 0)]
+
 # Reset indexes
 df.reset_index(drop=True, inplace=True)
 
 # Save dataset
-df.to_csv('Data/cleaned_data.csv', sep=',', encoding='utf-8', float_format='%.2f', decimal='.')
+df.to_csv('Data/cleaned_data.csv', sep=',', encoding='utf-8', float_format='%.6f', decimal='.')

@@ -26,26 +26,23 @@ def measure_time(label):
     end = time.time()
     print('Duration of [{}]: {}'.format(label, datetime.timedelta(seconds=end-start)))
 
+
 def load_data(path, to_split=True, delimiter=',',selected_features = None):
     """
     Load the csv file and returns (X,y).
     """
-    all_df = pd.read_csv(path, delimiter=delimiter)
-    # Sorting because we don't want to predict the past matches with data about the future
-    all_df.sort_values(by=['Year', 'Day'], inplace=True)
-    y = all_df['PlayerA Win'].values.squeeze()
-    all_df.drop('PlayerA Win', axis=1, inplace=True)
+    df = pd.read_csv(path, delimiter=delimiter)
+    y = df['PlayerA Win'].values.squeeze()
+    df.drop('PlayerA Win', axis=1, inplace=True)
 
-    # If no features selected by the user
+    # If no features selected by the user, take all numerical features
     if selected_features is None:
-        # Take all numerical features
-        selected_features = all_df.iloc[:,8:].columns.tolist()
+        selected_features = df.iloc[:,8:].columns.tolist()
 
-    X = all_df[selected_features].values.squeeze()
+    X = df[selected_features].values.squeeze()
 
     print("Selected features :", selected_features)
-    # Shuffle is False because we don't want to predict the past matches with data about the future
-    X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2, shuffle=False)
+    X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2)
 
     if to_split:
         return X_train, X_test, y_train, y_test, np.asarray(selected_features)
@@ -57,8 +54,8 @@ def create_estimator(path, nb_features, to_split=True):
     Train th model.
     """
     model = None
-    filename = "MLP_stats.pkl"
-    features_df = pd.read_csv('feature_importance.csv', sep=',')
+    filename = "Models/MLP_stats.pkl"
+    features_df = pd.read_csv('Data/feature_importance.csv', sep=',')
     features_list = features_df.iloc[:nb_features, 0].tolist()
 
     # Load the training (and testing) set(s)
@@ -118,8 +115,10 @@ def tune_hyperparameter(path):
 
     print("Best parameters", mlp_random.best_params_)
     # Best parameters {'learning_rate_init': 0.01, 'learning_rate': 'adaptive', 'activation': 'tanh'}
+
+
 if __name__ == "__main__":
-    path = 'new_stats_data_diff.csv'
+    path = 'Data/training_diff_data.csv'
 
     # tune_hyperparameter(path)
-    create_estimator(path,6, to_split=False)
+    create_estimator(path, 6, to_split=False)
