@@ -4,7 +4,7 @@ matches_2019 = pd.read_csv("../Original data/matches_2019.csv")
 matches_2018 = pd.read_csv("../Original data/matches_2018.csv")
 tournaments_2018 = pd.read_csv('../Original data/tournaments_2018-2018.csv')
 tournaments_2019 = pd.read_csv('../Original data/tournaments_2019-2019.csv')
-clean_data = pd.read_csv('../../Data/cleaned_data.csv')
+clean_data = pd.read_csv('../../_Data/Original_dataset/cleaned_data.csv')
 
 
 matches_col_to_keep = [
@@ -83,7 +83,7 @@ to_rename = {
 clean_matches_2019.rename(columns= to_rename, inplace=True)
 
 clean_matches_2019['round'] = 0
-clean_matches_2019['best_of'] = 0
+clean_matches_2019['best_of'] = 3
 
 clean_matches_2019['PlayerA_rank'] = 0
 clean_matches_2019['PlayerA_rank_points'] = 0
@@ -102,7 +102,12 @@ clean_matches_2019['surface_Carpet'] = 0
 clean_matches_2019['surface_Grass'] = 0
 clean_matches_2019['surface_Hard'] = 0
 
-clean_matches_2019['PlayerA Win'] = 1
+clean_matches_2019['PlayerA_Win'] = 1
+
+# Best of of 5 if draw_size is 128 
+for index, row in clean_matches_2019.iterrows():
+    if row['draw_size'] == 128:
+        clean_matches_2019.loc[index,'best_of'] = 5
 
 # One hot encore the surface manually
 for index, row in clean_matches_2019.iterrows():
@@ -135,7 +140,7 @@ player_data = player_data.drop_duplicates('Name', keep='first')
 
 player_ages = player_data[['Name','age']]
 player_righthandedness = player_data[['Name','righthanded']]
-print("Player data shape: (unique) ", player_data.shape)
+print("Unique player names in 1993-2018: ", player_data.shape)
 print("Clean matches shape before merging :",clean_matches_2019.shape)
 
 
@@ -185,55 +190,59 @@ clean_matches_2019.drop(columns=['Name_x','Name_y'], inplace=True)
 
 print("Clean matches shape after merging :",clean_matches_2019.shape)
 
-to_rearrange= ['PlayerA_name',
-'PlayerB_name',
-'Year',
-'Day',
-'best_of',
-'draw_size',
-'round',
-'minutes',
-'PlayerA_id',
-'PlayerB_id',
-'PlayerA_FR',
-'PlayerB_FR',
-'PlayerA_righthanded',
-'PlayerB_righthanded',
-'PlayerA_height',
-'PlayerA_age',
-'PlayerA_rank',
-'PlayerA_rank_points',
-'PlayerA_ace',
-'PlayerA_df',
-'PlayerA_svpt',
-'PlayerA_1stIn',
-'PlayerA_1stWon',
-'PlayerA_2ndWon',
-'PlayerA_SvGms',
-'PlayerA_bpSaved',
-'PlayerA_bpFaced',
-'PlayerB_height',
-'PlayerB_age',
-'PlayerB_rank',
-'PlayerB_rank_points',
-'PlayerB_ace',
-'PlayerB_df',
-'PlayerB_svpt',
-'PlayerB_1stIn',
-'PlayerB_1stWon',
-'PlayerB_2ndWon',
-'PlayerB_SvGms',
-'PlayerB_bpSaved',
-'PlayerB_bpFaced',
-'PlayerA Win',
-'surface_Carpet',
-'surface_Clay',
-'surface_Grass',
-'surface_Hard'
+to_rearrange = [
+    'PlayerA_name',
+    'PlayerB_name',
+    'Year',
+    'Day',
+    'best_of',
+    'draw_size',
+    'round',
+    'minutes',
+    'PlayerA_id',
+    'PlayerB_id',
+    'PlayerA_FR',
+    'PlayerB_FR',
+    'PlayerA_righthanded',
+    'PlayerB_righthanded',
+    'PlayerA_age',
+    'PlayerA_rank',
+    'PlayerA_rank_points',
+    'PlayerA_ace',
+    'PlayerA_df',
+    'PlayerA_svpt',
+    'PlayerA_1stIn',
+    'PlayerA_1stWon',
+    'PlayerA_2ndWon',
+    'PlayerA_SvGms',
+    'PlayerA_bpSaved',
+    'PlayerA_bpFaced',
+    'PlayerB_age',
+    'PlayerB_rank',
+    'PlayerB_rank_points',
+    'PlayerB_ace',
+    'PlayerB_df',
+    'PlayerB_svpt',
+    'PlayerB_1stIn',
+    'PlayerB_1stWon',
+    'PlayerB_2ndWon',
+    'PlayerB_SvGms',
+    'PlayerB_bpSaved',
+    'PlayerB_bpFaced',
+    'PlayerA_Win',
+    'surface_Carpet',
+    'surface_Clay',
+    'surface_Grass',
+    'surface_Hard'
 ]
 
 clean_matches_2019 = clean_matches_2019[to_rearrange]
+# numeric_cols = clean_matches_2019.columns.difference(['PlayerA_name', 'PlayerB_name'])
+# clean_matches_2019[numeric_cols] = clean_matches_2019[numeric_cols].apply(pd.to_numeric)
+clean_matches_2019 = clean_matches_2019.astype('float', errors='ignore')
 clean_matches_2019.to_csv("../Clean data/clean_matches_2019.csv", index=False)
 
 clean_data = pd.concat([clean_data,clean_matches_2019], sort=False)
-clean_data.to_csv("test.csv", index=False)
+clean_data.drop(columns=['Unnamed: 0'], inplace=True)
+print("Merging 1993-2018 with 2019 shape:" ,clean_data.shape)
+clean_data.to_csv('../../_Data/Original_dataset/cleaned_with_2019_data.csv')
