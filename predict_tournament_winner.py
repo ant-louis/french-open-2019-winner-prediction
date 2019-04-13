@@ -67,6 +67,7 @@ if __name__ == '__main__':
         print("Call with \"python predict_tournament.py matches_examples.csv\"")
         exit()
     matches_file = sys.argv[1]
+    matches_file = "_Data/Predictions/" + matches_file
     predicator = TournamentPredictor(matches_file)
     results = predicator.predict(1000000)
 

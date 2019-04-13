@@ -61,7 +61,7 @@ class TournamentPredictor:
         Considering a ceertain number of possible draws, return
         the probability for each player to win the tournament.
         """
-        seeds_nb = 32
+        seeds_nb = 128
         self.results = np.zeros((seeds_nb, floor(log2(seeds_nb))))
         draw_generate = Draws()
         draws = draw_generate.generate_draws(nb_draws)
@@ -69,7 +69,7 @@ class TournamentPredictor:
         for draw in draws:
             self.winner(draw, 0)
         self.results /= nb_draws
-        np.savetxt("results.csv", self.results, delimiter=",")
+        np.savetxt("_Data/Predictions/players_rounds_predictions_.csv", self.results, delimiter=",")
 
         return self.results
 
@@ -80,9 +80,8 @@ if __name__ == '__main__':
         print("Call with \"python predict_tournament.py matches_examples.csv\"")
         exit()
     matches_file = sys.argv[1]
-    matches_file = "Test_data/" + matches_file
+    matches_file = "_Data/Predictions/" + matches_file
     predicator = TournamentPredictor(matches_file)
     results = predicator.predict(100000)
     print("Winner of tournament with filemane '{}' :".format(matches_file))
-    print(results)
     print(np.argmax(results) + 1)
