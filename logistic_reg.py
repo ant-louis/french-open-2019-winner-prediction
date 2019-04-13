@@ -117,6 +117,15 @@ if __name__ == "__main__":
                          'bp_faced%_diff',
                          'bp_saved%_diff']
     
+    # selected_features = ['age_diff',
+    #                      'rank_diff',
+    #                      'rank_points_diff',
+    #                      'Win%_diff',
+    #                      'bestof_diff',
+    #                      '1st_serve_won%_diff',
+    #                      '2nd_serve_won%_diff',
+    #                      'bp_faced%_diff']
+    
     # selected_features = ['Same_handedness',
     #                      'age_diff',
     #                      'Win%_diff',
@@ -130,11 +139,5 @@ if __name__ == "__main__":
     #                      'df%_diff',
     #                      'bp_faced%_diff',
     #                      'bp_saved%_diff']
-
-    # selected_features = ['age_diff',
-    #                      'Win%_diff',
-    #                      '1st_serve_won%_diff',
-    #                      '2nd_serve_won%_diff',
-    #                      'bp_faced%_diff']
     
     train(path, to_split=True, selected_features=selected_features)
