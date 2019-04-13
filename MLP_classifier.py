@@ -88,11 +88,12 @@ def create_estimator(path, to_split=True, selected_features=None):
 
     with measure_time('Training...'):
         model = MLPClassifier(solver='adam', 
-                                hidden_layer_sizes = (50,), 
+                                hidden_layer_sizes = (20,), 
                                 early_stopping=True,
-                                learning_rate_init= 0.01,
-                                learning_rate = 'adaptive',
-                                activation='relu')
+                                learning_rate_init= 0.05,
+                                learning_rate = 'constant',
+                                activation='tanh',
+                                momentum=0.6)
         model.fit(X_train, y_train)
         joblib.dump(model, filename) 
         
@@ -116,14 +117,14 @@ def tune_hyperparameter(path, selected_features=None):
         
     # Create the random grid
     random_grid = {'hidden_layer_sizes': [(20,), (50,), (100,), (150,)],
-                    'activation': ['tanh', 'relu'],
-                    'solver': ['sgd', 'adam'],
-                    'learning_rate_init': [0.005, 0.01, 0.05, 0.1],
-                    'learning_rate': ['constant','adaptive']}
+                    'activation': ['tanh', 'relu', 'logistic', 'identity'],
+                    'learning_rate_init': [0.005, 0.01, 0.05, 0.1, 0.2, 0.3],
+                    'learning_rate': ['constant','adaptive'],
+                    'momentum': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}
     
     # Use the random grid to search for best hyperparameters
     # First create the base model to tune
-    mlp = MLPClassifier(early_stopping=True)
+    mlp = MLPClassifier(solver='sgd', early_stopping=True)
     # Random search of parameters, using 5 fold cross validation, 
     # search across 100 different combinations, and use all available cores
     mlp_random = RandomizedSearchCV(estimator = mlp,
@@ -132,15 +133,15 @@ def tune_hyperparameter(path, selected_features=None):
                                    cv = 5,
                                    verbose=2,
                                    random_state=42,
-                                   n_jobs = -2)
+                                   n_jobs = -1)
     # Fit the random search model
     mlp_random.fit(X, y)
 
     print("Best parameters", mlp_random.best_params_)
-    # Best parameters {'solver': 'adam', 'learning_rate_init': 0.01, 'learning_rate': 'adaptive', 'hidden_layer_sizes': (50,), 'activation': 'relu'}
+    # Best parameters {'solver': 'sgd', 'learning_rate_init': 0.05, 'learning_rate': 'constant', 'hidden_layer_sizes': (20,), 'activation': 'tanh', 'momentum': 0.6}
 
 if __name__ == "__main__":
-    path = "_Data/Training_dataset/training_data_weight08_+surface_weighting_min20matches.csv"
+    path = "_Data/Training_dataset/training_data_weight06_+surface_weighting_min20matches.csv"
 
     selected_features = ['Same_handedness',
                          'age_diff',
@@ -157,6 +158,29 @@ if __name__ == "__main__":
                          'df%_diff',
                          'bp_faced%_diff',
                          'bp_saved%_diff']
+    
+    # selected_features = ['age_diff',
+    #                      'rank_diff',
+    #                      'rank_points_diff',
+    #                      'Win%_diff',
+    #                      'bestof_diff',
+    #                      '1st_serve_won%_diff',
+    #                      '2nd_serve_won%_diff',
+    #                      'bp_faced%_diff']
+    
+    # selected_features = ['Same_handedness',
+    #                      'age_diff',
+    #                      'Win%_diff',
+    #                      'bestof_diff',
+    #                      'minutes_diff',
+    #                      'svpt%_diff',
+    #                      '1st_serve%_diff',
+    #                      '1st_serve_won%_diff',
+    #                      '2nd_serve_won%_diff',
+    #                      'ace%_diff',
+    #                      'df%_diff',
+    #                      'bp_faced%_diff',
+    #                      'bp_saved%_diff']
 
     #tune_hyperparameter(path, selected_features=selected_features)
     create_estimator(path, to_split=True, selected_features=selected_features)
