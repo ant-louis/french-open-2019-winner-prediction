@@ -95,10 +95,10 @@ def train_estimator(path, computeFeatureImportance=False, to_split=True, selecte
     feature_importance_total = np.zeros((train_features.shape[0], 1))
     for n in range(ntry):
         with measure_time('Training {} out of {}'.format(n+1, ntry)):
-            model = RandomForestClassifier(n_estimators=200,
+            model = RandomForestClassifier(n_estimators=2000,
                                             min_samples_split=5,
-                                            min_samples_leaf=4,
-                                            max_features='auto',
+                                            min_samples_leaf=1,
+                                            max_features='sqrt',
                                             max_depth=10, 
                                             bootstrap=True,
                                             random_state=42,
@@ -142,9 +142,9 @@ def create_estimator(path, selected_features):
     X, _, y, _, _ = load_data(path, to_split=True, selected_features=selected_features)
 
     print("Creating estimator on dataset with {} best features".format(nb_features))
-    model = RandomForestClassifier(n_estimators=1600,
-                                min_samples_split=2,
-                                min_samples_leaf=4,
+    model = RandomForestClassifier(n_estimators=2000,
+                                min_samples_split=5,
+                                min_samples_leaf=1,
                                 max_features='sqrt',
                                 max_depth=10, 
                                 bootstrap=True,
@@ -199,13 +199,13 @@ def tune_hyperparameter(path, selected_features=None):
     rf_random.fit(X, y)
 
     print("Best parameters", rf_random.best_params_)
-    # Best parameters weight 0.7 min 30 matches 3cv: {'n_estimators': 1000, 'min_samples_split': 10, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'max_depth': 10, 'bootstrap': True}
-    # Best parameters weight 0.6 min 50 matches 10cv: {'n_estimators': 400, 'min_samples_split': 2, 'min_samples_leaf': 4, 'max_features': 'sqrt', 'max_depth': 10, 'bootstrap': True}
     # Best parameters weight 0.8 min 20 matches + surface weighting (all features) : {'n_estimators': 1600, 'min_samples_split': 2, 'min_samples_leaf': 4, 'max_features': 'sqrt', 'max_depth': 10, 'bootstrap': True}
     # Best parameters weight 0.8 min 20 matches + surface weighting (without rank and ranking points) : {'n_estimators': 200, 'min_samples_split': 5, 'min_samples_leaf': 4, 'max_features': 'auto', 'max_depth': 10, 'bootstrap': True}
+    # Best parameters weight 0.6 min 20 matches + surface weighting (all features) : {'n_estimators': 2000, 'min_samples_split': 5, 'min_samples_leaf': 1, 'max_features': 'sqrt', 'max_depth': 10, 'bootstrap': True}
+
 
 if __name__ == "__main__":
-    path = "_Data/Training_dataset/training_data_weight08_+surface_weighting_min20matches.csv"
+    path = "_Data/Training_dataset/training_data_weight06_+surface_weighting_min20matches.csv"
 
     selected_features = ['Same_handedness',
                          'age_diff',
