@@ -99,43 +99,42 @@ def train(path, to_split=True, selected_features=None):
 
 
 if __name__ == "__main__":
-    path = "_Data/Training_dataset/training_data_weight08_+surface_weighting_min20matches.csv"
+    path = "_Data/Training_dataset/training_data_weight06_+surface_weighting_min20matches.csv"
 
-    # selected_features = ['Same_handedness',
-    #                      'age_diff',
-    #                      'rank_diff',
-    #                      'rank_points_diff',
-    #                      'Win%_diff',
-    #                      'bestof_diff',
-    #                      'minutes_diff',
-    #                      'svpt%_diff',
-    #                      '1st_serve%_diff',
-    #                      '1st_serve_won%_diff',
-    #                      '2nd_serve_won%_diff',
-    #                      'ace%_diff',
-    #                      'df%_diff',
-    #                      'bp_faced%_diff',
-    #                      'bp_saved%_diff']
-    
-    # selected_features = ['Same_handedness',
-    #                      'age_diff',
-    #                      'Win%_diff',
-    #                      'bestof_diff',
-    #                      'minutes_diff',
-    #                      'svpt%_diff',
-    #                      '1st_serve%_diff',
-    #                      '1st_serve_won%_diff',
-    #                      '2nd_serve_won%_diff',
-    #                      'ace%_diff',
-    #                      'df%_diff',
-    #                      'bp_faced%_diff',
-    #                      'bp_saved%_diff']
-
-    selected_features = ['age_diff',
+    selected_features = ['Same_handedness',
+                         'age_diff',
+                         'rank_diff',
+                         'rank_points_diff',
                          'Win%_diff',
+                         'bestof_diff',
+                         'minutes_diff',
+                         'svpt%_diff',
+                         '1st_serve%_diff',
                          '1st_serve_won%_diff',
                          '2nd_serve_won%_diff',
-                         'bp_faced%_diff']
+                         'ace%_diff',
+                         'df%_diff',
+                         'bp_faced%_diff',
+                         'bp_saved%_diff']
+    
+    # selected_features = ['Same_handedness',
+    #                      'age_diff',
+    #                      'Win%_diff',
+    #                      'bestof_diff',
+    #                      'minutes_diff',
+    #                      'svpt%_diff',
+    #                      '1st_serve%_diff',
+    #                      '1st_serve_won%_diff',
+    #                      '2nd_serve_won%_diff',
+    #                      'ace%_diff',
+    #                      'df%_diff',
+    #                      'bp_faced%_diff',
+    #                      'bp_saved%_diff']
+
+    # selected_features = ['age_diff',
+    #                      'Win%_diff',
+    #                      '1st_serve_won%_diff',
+    #                      '2nd_serve_won%_diff',
+    #                      'bp_faced%_diff']
     
     train(path, to_split=True, selected_features=selected_features)
-
