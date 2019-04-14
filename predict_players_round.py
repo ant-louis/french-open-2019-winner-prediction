@@ -69,7 +69,7 @@ class TournamentPredictor:
         for draw in draws:
             self.winner(draw, 0)
         self.results /= nb_draws
-        np.savetxt("_Data/Predictions/players_rounds_predictions_.csv", self.results, delimiter=",")
+        np.savetxt("_Data/Predictions/players_rounds_predictions_2017.csv", self.results, delimiter=",")
 
         return self.results
 
@@ -82,6 +82,6 @@ if __name__ == '__main__':
     matches_file = sys.argv[1]
     matches_file = "_Data/Predictions/" + matches_file
     predicator = TournamentPredictor(matches_file)
-    results = predicator.predict(100000)
+    results = predicator.predict(1000000)
     print("Winner of tournament with filemane '{}' :".format(matches_file))
     print(np.argmax(results[:,0]) + 1)

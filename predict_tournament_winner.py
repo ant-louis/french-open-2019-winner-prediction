@@ -77,4 +77,3 @@ if __name__ == '__main__':
     print("Seed rank \t Probability")
     for i in indices:
         print("{} \t\t {}".format(i+1, results[i]))
-        

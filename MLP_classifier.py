@@ -87,7 +87,7 @@ def create_estimator(path, to_split=True, selected_features=None):
         X_train, y_train, _ = load_data(path, to_split=to_split, selected_features=selected_features)
 
     with measure_time('Training...'):
-        model = MLPClassifier(solver='adam', 
+        model = MLPClassifier(solver='sgd', 
                                 hidden_layer_sizes = (20,), 
                                 early_stopping=True,
                                 learning_rate_init= 0.05,

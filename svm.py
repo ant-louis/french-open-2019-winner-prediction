@@ -140,5 +140,5 @@ if __name__ == "__main__":
     #                      'bp_faced%_diff',
     #                      'bp_saved%_diff']
     
-    # Kernels : ‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’
-    train(path, 'rbf', to_split=True, selected_features=selected_features)
+    # Kernels : ‘linear’, ‘rbf’, ‘poly’
+    train(path, 'poly', to_split=True, selected_features=selected_features)
