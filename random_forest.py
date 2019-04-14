@@ -255,6 +255,6 @@ if __name__ == "__main__":
     #                      'bp_saved%_diff']
 
     #tune_hyperparameter(path, selected_features=selected_features)
-    train_estimator(path, computeFeatureImportance=True, to_split=True, selected_features=selected_features)
-    #create_estimator(path, selected_features)
+    #train_estimator(path, computeFeatureImportance=True, to_split=True, selected_features=selected_features)
+    create_estimator(path, selected_features)
     
