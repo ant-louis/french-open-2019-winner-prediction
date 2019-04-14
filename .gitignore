@@ -7,5 +7,6 @@ chromedriver
 scrapedPlayerInfo/
 .DS_Store
 __pycache__/
-.ipynb_checkpoints
+.ipynb_checkpoints/
+_Data/.ipynb_checkpoints/
 _Models/*.pkl
