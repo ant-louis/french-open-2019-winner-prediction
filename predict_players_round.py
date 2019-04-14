@@ -84,4 +84,4 @@ if __name__ == '__main__':
     predicator = TournamentPredictor(matches_file)
     results = predicator.predict(100000)
     print("Winner of tournament with filemane '{}' :".format(matches_file))
-    print(np.argmax(results) + 1)
+    print(np.argmax(results[:,0]) + 1)
