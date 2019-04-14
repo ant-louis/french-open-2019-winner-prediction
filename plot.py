@@ -10,15 +10,15 @@ plt.style.use('ggplot')
 
 
 def timing_function(t):
-    return 0.8**t
+    return 0.6**t
 
 def plot_timing_function():
-    t = np.arange(1, 17, 1)
+    t = np.arange(1, 11, 1)
     fig, ax = plt.subplots()
 
     ax.plot(t, timing_function(t).astype(np.float), color='lightcoral')
     ax.hlines(y=1, xmin=0, xmax=1, color='lightcoral')
-    ax.vlines(x=1, ymin=0.8, ymax=1, color='lightcoral')
+    ax.vlines(x=1, ymin=0.6, ymax=1, color='lightcoral')
 
     ax.set_xlabel(r'$\Delta t$', fontsize=16)
     ax.set_ylabel(r'$w_{time}$', fontsize=18, rotation=0)
@@ -28,8 +28,8 @@ def plot_timing_function():
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     
-    plt.xlim(0, 16)
-    plt.ylim(0, 1)
+    plt.xlim(0, 10)
+    plt.ylim(0, 1.1)
     plt.show()
 
 

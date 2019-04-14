@@ -1,8 +1,4 @@
-*.ama
 config.ini
-Data/*.xlsx
-Data/*.xls
-Data/*.zip
 importscript.sh
 .vscode/
 Pipfile
@@ -11,4 +7,5 @@ chromedriver
 scrapedPlayerInfo/
 .DS_Store
 __pycache__/
-training_data/
+.ipynb_checkpoints
+_Models/*.pkl
