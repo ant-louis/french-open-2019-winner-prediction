@@ -31,6 +31,14 @@ def load_data(path, to_split=True, selected_features=None):
     # Read the csv file
     df = pd.read_csv(path, header=0, index_col=0)
 
+    # Exclude the matches of Roland Garros 2016, 2017, 2018 (as we will test on that later)
+    df_2018 = df[(df['Year'] == 2018) & (df['Day'] == 148)]
+    df_2017 = df[(df['Year'] == 2017) & (df['Day'] == 149)]
+    df_2016 = df[(df['Year'] == 2016) & (df['Day'] == 143)]
+    bad_index = df_2018.index.values.tolist() + df_2017.index.values.tolist() + df_2016.index.values.tolist()
+    df = df[~df.index.isin(bad_index)]
+    df.reset_index(drop=True, inplace=True)
+
     # Sorting because we want our testing set to be the last matches
     df.sort_values(by=['Year', 'Day'], inplace=True)
 
@@ -140,4 +148,4 @@ if __name__ == "__main__":
     #                      'bp_faced%_diff',
     #                      'bp_saved%_diff']
     
-    train(path, to_split=True, selected_features=selected_features)
+    train(path, to_split=False, selected_features=selected_features)
