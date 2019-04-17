@@ -7,6 +7,21 @@ tournaments_2019 = pd.read_csv('../Original data/tournaments_2019-2019.csv')
 clean_data = pd.read_csv('../../_Data/Original_dataset/cleaned_data.csv')
 
 
+# Megrge with tournament
+clean_matches_2019 = pd.merge(matches_2019, tournaments_2019, left_on='tourney_order', right_on='tourney_order')
+clean_matches_2018 = pd.merge(matches_2018, tournaments_2018, left_on='tourney_order', right_on='tourney_order')
+
+# Correct wrong year for a given date (31 december 2018 is labeled as 2019)
+wrong_date = clean_matches_2019['tourney_dates'] == '2018.12.31'
+clean_matches_2019.loc[wrong_date, 'tourney_year'] = 2018
+
+# Use month to convert to day
+clean_matches_2019['tourney_day'] = clean_matches_2019['tourney_day'].astype(int)
+clean_matches_2019['tourney_day'] = (clean_matches_2019['tourney_month'] -1)*30 + clean_matches_2019['tourney_day']
+clean_matches_2018['tourney_day'] = clean_matches_2018['tourney_day'].astype(int)
+clean_matches_2018['tourney_day'] = (clean_matches_2018['tourney_month'] -1)*30 + clean_matches_2018['tourney_day']
+
+# Keep only relevant columns
 matches_col_to_keep = [
     'tourney_year',
     'tourney_day',
@@ -37,19 +52,27 @@ matches_col_to_keep = [
     'loser_break_points_serve_total'
 ]
 
-# Mege with tournament and keep only relevant columns
-clean_matches_2019 = pd.merge(matches_2019, tournaments_2019, left_on='tourney_order', right_on='tourney_order')
 clean_matches_2019 = clean_matches_2019[matches_col_to_keep]
+clean_matches_2018 = clean_matches_2018[matches_col_to_keep]
+
+# From 2018, only use matches after day 257 (we have the rest already)
+after_257_days = clean_matches_2018['tourney_day'] > 257
+clean_matches_2018.where(after_257_days, inplace=True)
+clean_matches_2018.dropna(inplace=True)
+
+# Concatenate 2018 after 257 days and  2019 matches into one
+clean_matches = pd.concat([clean_matches_2018, clean_matches_2019])
+
 
 # Apply 'Title Case' string format to names
-clean_matches_2019['winner_name'] = clean_matches_2019['winner_name'].apply(lambda x : x.title())
-clean_matches_2019['losers_name'] = clean_matches_2019['losers_name'].apply(lambda x : x.title())
+clean_matches['winner_name'] = clean_matches['winner_name'].apply(lambda x : x.title())
+clean_matches['losers_name'] = clean_matches['losers_name'].apply(lambda x : x.title())
 # Replace - with spaces in names
-clean_matches_2019['winner_name'] = clean_matches_2019['winner_name'].str.replace('-', ' ')
-clean_matches_2019['losers_name'] = clean_matches_2019['losers_name'].str.replace('-', ' ')
+clean_matches['winner_name'] = clean_matches['winner_name'].str.replace('-', ' ')
+clean_matches['losers_name'] = clean_matches['losers_name'].str.replace('-', ' ')
 
 
-
+# Rename columns to fit with already collected data
 to_rename = {
     'tourney_year': 'Year',
     'tourney_day':'Day',
@@ -79,48 +102,49 @@ to_rename = {
     'loser_break_points_serve_total':'PlayerB_bpFaced'    
 }
 
+clean_matches.rename(columns= to_rename, inplace=True)
 
-clean_matches_2019.rename(columns= to_rename, inplace=True)
+# Create empty columns for data we don't have
+clean_matches['round'] = 0
+clean_matches['best_of'] = 3
 
-clean_matches_2019['round'] = 0
-clean_matches_2019['best_of'] = 3
+clean_matches['PlayerA_rank'] = 0
+clean_matches['PlayerA_rank_points'] = 0
+clean_matches['PlayerB_rank'] = 0
+clean_matches['PlayerB_rank_points'] = 0
 
-clean_matches_2019['PlayerA_rank'] = 0
-clean_matches_2019['PlayerA_rank_points'] = 0
-clean_matches_2019['PlayerB_rank'] = 0
-clean_matches_2019['PlayerB_rank_points'] = 0
+clean_matches['PlayerA_id'] = 0
+clean_matches['PlayerB_id'] = 0
+clean_matches['PlayerA_FR'] = 0
+clean_matches['PlayerB_FR'] = 0
+clean_matches['PlayerA_height'] = 0
+clean_matches['PlayerB_height'] = 0
 
-clean_matches_2019['PlayerA_id'] = 0
-clean_matches_2019['PlayerB_id'] = 0
-clean_matches_2019['PlayerA_FR'] = 0
-clean_matches_2019['PlayerB_FR'] = 0
-clean_matches_2019['PlayerA_height'] = 0
-clean_matches_2019['PlayerB_height'] = 0
+clean_matches['surface_Clay'] = 0
+clean_matches['surface_Carpet'] = 0
+clean_matches['surface_Grass'] = 0
+clean_matches['surface_Hard'] = 0
 
-clean_matches_2019['surface_Clay'] = 0
-clean_matches_2019['surface_Carpet'] = 0
-clean_matches_2019['surface_Grass'] = 0
-clean_matches_2019['surface_Hard'] = 0
+clean_matches['PlayerA_Win'] = 1
 
-clean_matches_2019['PlayerA_Win'] = 1
 
 # Best of of 5 if draw_size is 128 
-for index, row in clean_matches_2019.iterrows():
+for index, row in clean_matches.iterrows():
     if row['draw_size'] == 128:
-        clean_matches_2019.loc[index,'best_of'] = 5
+        clean_matches.loc[index,'best_of'] = 5
 
 # One hot encore the surface manually
-for index, row in clean_matches_2019.iterrows():
+for index, row in clean_matches.iterrows():
     if row['tourney_surface'] == 'Clay':
-        clean_matches_2019.loc[index,'surface_Clay'] = 1
+        clean_matches.loc[index,'surface_Clay'] = 1
     elif row['tourney_surface'] == 'Carpet':
-        clean_matches_2019.loc[index,'surface_Carpet'] = 1
+        clean_matches.loc[index,'surface_Carpet'] = 1
     elif row['tourney_surface'] == 'Grass':
-        clean_matches_2019.loc[index,'surface_Grass'] = 1
+        clean_matches.loc[index,'surface_Grass'] = 1
     elif row['tourney_surface'] == 'Hard':
-        clean_matches_2019.loc[index,'surface_Hard'] = 1
+        clean_matches.loc[index,'surface_Hard'] = 1
 
-clean_matches_2019.drop(columns= ['tourney_surface'], inplace=True)
+clean_matches.drop(columns= ['tourney_surface'], inplace=True)
 
 # Extract only relevant information
 player_A_data = clean_data[['PlayerA_name', 'PlayerA_age','PlayerA_righthanded', 'Year', 'Day']]
@@ -141,13 +165,13 @@ player_data = player_data.drop_duplicates('Name', keep='first')
 player_ages = player_data[['Name','age']]
 player_righthandedness = player_data[['Name','righthanded']]
 print("Unique player names in 1993-2018: ", player_data.shape)
-print("Clean matches shape before merging :",clean_matches_2019.shape)
+print("Clean matches shape before merging :",clean_matches.shape)
 
 
 # Get unique player names in the 2019 matches
-matches_player_names_A = clean_matches_2019.drop_duplicates("PlayerA_name", keep='last')['PlayerA_name']
+matches_player_names_A = clean_matches.drop_duplicates("PlayerA_name", keep='last')['PlayerA_name']
 matches_player_names_A.rename(columns={'PlayerA_name':'Name'}, inplace=True)
-matches_player_names_B = clean_matches_2019.drop_duplicates("PlayerB_name", keep='last')['PlayerB_name']
+matches_player_names_B = clean_matches.drop_duplicates("PlayerB_name", keep='last')['PlayerB_name']
 matches_player_names_B.rename(columns={'PlayerB_name':'Name'}, inplace=True)
 matches_player_names = pd.concat([matches_player_names_A, matches_player_names_B])
 matches_player_names = matches_player_names.drop_duplicates(keep='first')
@@ -172,24 +196,25 @@ for player_name in player_ages['Name'].values:
         # missing or superfluous middle names are added/deleted
         if (player_ln == match_player_ln and player_fn == match_player_fn):
             name_dict[match_player_name] = player_name
-clean_matches_2019.replace(to_replace=name_dict, inplace=True)
+clean_matches.replace(to_replace=name_dict, inplace=True)
 
-# Adding age of the players as a feature by merging clean_matches_2019 with players_age and righthandedness
-clean_matches_2019 = pd.merge(clean_matches_2019, player_ages, left_on="PlayerA_name", right_on="Name")
-clean_matches_2019 = pd.merge(clean_matches_2019, player_ages, left_on="PlayerB_name", right_on="Name")
-clean_matches_2019 = pd.merge(clean_matches_2019, player_righthandedness, left_on="PlayerA_name", right_on="Name")
-clean_matches_2019 = pd.merge(clean_matches_2019, player_righthandedness, left_on="PlayerB_name", right_on="Name")
+# Adding age of the players as a feature by merging clean_matches with players_age and righthandedness
+clean_matches = pd.merge(clean_matches, player_ages, left_on="PlayerA_name", right_on="Name")
+clean_matches = pd.merge(clean_matches, player_ages, left_on="PlayerB_name", right_on="Name")
+clean_matches = pd.merge(clean_matches, player_righthandedness, left_on="PlayerA_name", right_on="Name")
+clean_matches = pd.merge(clean_matches, player_righthandedness, left_on="PlayerB_name", right_on="Name")
 to_rename = {
     'age_x':'PlayerA_age', 
     'age_y': 'PlayerB_age',
     'righthanded_x': 'PlayerA_righthanded',
     'righthanded_y': 'PlayerB_righthanded',
     }
-clean_matches_2019.rename(columns=to_rename, inplace=True)
-clean_matches_2019.drop(columns=['Name_x','Name_y'], inplace=True)
+clean_matches.rename(columns=to_rename, inplace=True)
+clean_matches.drop(columns=['Name_x','Name_y'], inplace=True)
 
-print("Clean matches shape after merging :",clean_matches_2019.shape)
+print("Clean matches shape after merging :",clean_matches.shape)
 
+# Rearrange columns in the desired order
 to_rearrange = [
     'PlayerA_name',
     'PlayerB_name',
@@ -235,14 +260,17 @@ to_rearrange = [
     'surface_Grass',
     'surface_Hard'
 ]
+clean_matches = clean_matches[to_rearrange]
 
-clean_matches_2019 = clean_matches_2019[to_rearrange]
-# numeric_cols = clean_matches_2019.columns.difference(['PlayerA_name', 'PlayerB_name'])
-# clean_matches_2019[numeric_cols] = clean_matches_2019[numeric_cols].apply(pd.to_numeric)
-clean_matches_2019 = clean_matches_2019.astype('float', errors='ignore')
-clean_matches_2019.to_csv("../Clean data/clean_matches_2019.csv", index=False)
+# Convert numerical columns to float and sort per day and year
+clean_matches = clean_matches.astype('float', errors='ignore')
+clean_matches.sort_values(by=['Year', 'Day'], inplace=True)
 
-clean_data = pd.concat([clean_data,clean_matches_2019], sort=False)
+# Save the new matches to csv
+clean_matches.to_csv("../Clean data/clean_matches_2018_2019.csv", index=False)
+
+# Concat the new matches with the already collected data and save to csv
+clean_data = pd.concat([clean_data,clean_matches], sort=False)
 clean_data.drop(columns=['Unnamed: 0'], inplace=True)
 print("Merging 1993-2018 with 2019 shape:" ,clean_data.shape)
 clean_data.to_csv('../../_Data/Original_dataset/cleaned_with_2019_data.csv')
