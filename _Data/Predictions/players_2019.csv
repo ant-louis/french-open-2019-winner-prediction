@@ -7,7 +7,7 @@
 6,Kei Nishikori,0,1,29,6,4200
 7,Kevin Anderson,0,1,32,7,4115
 8,Stefanos Tsitsipas,0,1,20,8,3240
-9,Juan Martin del Potro,0,1,30,9,3225
+9,Juan Martin Del Potro,0,1,30,9,3225
 10,John Isner,0,1,33,10,3085
 11,Marin Cilic,0,1,30,11,3015
 12,Karen Khachanov,0,1,22,12,2810
@@ -23,7 +23,7 @@
 22,Roberto Bautista Agut,0,1,31,22,1680
 23,Kyle Edmund,0,1,24,23,1575
 24,Diego Schwartzman,0,1,26,24,1485
-25,Alex de Minaur,0,1,20,25,1439
+25,Alex De Minaur,0,1,20,25,1439
 26,Gilles Simon,1,1,34,26,1385
 27,Pablo Carreno Busta,0,1,27,27,1300
 28,Grigor Dimitrov,0,1,27,28,1300
@@ -31,9 +31,9 @@
 30,Richard Gasquet,1,1,32,30,1285
 31,Lucas Pouille,1,1,25,31,1275
 32,Laslo Djere,0,1,23,32,1246
-33,Felix Auger-Aliassime,0,1,18,33,1245
+33,Felix Auger Aliassime,0,1,18,33,1245
 34,Nick Kyrgios,0,1,23,34,1215
-35,Jo-Wilfried Tsonga,1,1,33,102,593
+35,Jo Wilfried Tsonga,1,1,33,102,593
 36,Guido Pella,0,0,28,35,1205
 37,Stan Wawrinka,0,1,34,36,1185
 38,Marton Fucsovics,0,1,27,37,1180
@@ -43,12 +43,12 @@
 42,Jeremy Chardy,1,1,32,41,1055
 43,Mikhail Kukushkin,1,31,1,42,1025
 44,Benoit Paire,1,1,29,43,993
-45,Jan-Lennard Struff,0,1,28,44,990
+45,Jan Lennard Struff,0,1,28,44,990
 46,Radu Albot,0,1,29,45,977
 47,Andreas Seppi,0,1,35,46,970
 48,Christian Garin,0,1,22,47,970
 49,Dusan Lajovic,0,1,28,48,950
-50,Pierre-Hugues Herbert,1,1,28,49,948
+50,Pierre Hugues Herbert,1,1,28,49,948
 51,Martin Klizan,0,0,29,50,940
 52,Joao Sousa,0,1,30,51,937
 53,Hubert Hurkacz,0,1,22,52,934
@@ -81,7 +81,7 @@
 80,Juan Ignacio Londero,0,1,25,79,697
 81,Prajnesh Gunneswaran,0,0,29,80,688
 82,Pablo Cuevas,0,1,33,81,687
-83,Albert Ramos-Vinolas,0,0,31,82,685
+83,Albert Ramos Vinolas,0,0,31,82,685
 84,Nicolas Jarry,0,1,23,83,675
 85,Guido Andreozzi,0,1,27,84,668
 86,Denis Kudla,0,1,26,85,663
@@ -97,33 +97,33 @@
 96,Thomas Fabbiano,0,1,29,93,648
 97,Lloyd Harris,0,1,22,94,633
 98,Jiri Vesely,0,0,25,95,624
-99,Cedrik-Marcel Stebe,0,0,28,506,10
+99,Cedrik Marcel Stebe,0,0,28,506,10
 100,Lorenzo Sonego,0,1,23,96,622
 101,Ivo Karlovic,0,1,40,97,619
 102,Tomas Berdych,0,1,33,98,605
 103,Ricardas Berankis,0,1,28,99,601
 104,Alexander Bublik,0,1,21,100,600
-105,,,,,,
-106,,,,,,
-107,,,,,,
-108,,,,,,
-109,,,,,,
-110,,,,,,
-111,,,,,,
-112,,,,,,
-113,,,,,,
-114,,,,,,
-115,,,,,,
-116,,,,,,
-117,,,,,,
-118,,,,,,
-119,,,,,,
-120,,,,,,
-121,,,,,,
-122,,,,,,
-123,,,,,,
-124,,,,,,
-125,,,,,,
-126,,,,,,
-127,,,,,,
-128,,,,,,
+105,Egor Gerasimov,0,1,26,135,424
+106,Hyeon Chung,0,1,22,124,460
+107,Christopher Eubanks,0,1,22,147,378
+108,Henri Laaksonen,0,1,27,119,489
+109,Filip Krajinovic,0,1,27,104,576
+110,Filippo Baldi,0,1,23,151,364
+111,Maximilian Marterer,0,1,23,101,594
+112,Roberto Carballes Baena,0,1,26,103,578
+113,Oscar Otte,0,1,25,148,376
+114,Jack Sock,0,1,26,149,375
+115,Brayden Schnur,0,1,23,112,533
+116,Marcos Giron,0,1,25,169,318
+117,Thiago Monteiro,0,1,24,114,523
+118,Thanasi Kokkinakis,0,1,23,186,286
+119,Marcos Baghdatis,0,1,33,138,420
+120,Yasutaka Uchiyama,0,1,26,226,217
+121,Gregoire Barrere,1,1,25,118,490
+122,Corentin Moutet,1,0,19,126,445
+123,Antoine Hoang,1,1,23,136,423
+124,Quentin Halys,1,1,22,156,355
+125,Maxime Janvier,1,1,22,200,262
+126,Elliot Benchetrit,1,1,20,263,171
+127,Alexei Popyrin,0,1,19,120,486
+128,Ryan Harrison,0,1,26,109,545
