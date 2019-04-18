@@ -1,129 +1,129 @@
-,PlayerA_name
-1,Novak Djokovic
-2,Rafael Nadal
-3,Alexander Zverev
-4,Roger Federer
-5,Dominic Thiem
-6,Kei Nishikori
-7,Kevin Anderson
-8,Stefanos Tsitsipas
-9,Juan Martin del Potro
-10,John Isner
-11,Marin Cilic
-12,Karen Khachanov
-13,Borna Coric
-14,Daniil Medvedev
-15,Milos Raonic
-16,Marco Cecchinato
-17,Nikoloz Basilashvili
-18,Fabio Fognini
-19,Denis Shapovalov
-20,David Goffin
-21,Roberto Bautista Agut
-22,Kyle Edmund
-23,Diego Schwartzman
-24,Alex de Minaur
-25,Grigor Dimitrov
-26,Frances Tiafoe
-27,Richard Gasquet
-28,Lucas Pouille
-29,Laslo Djere
-30,Felix Auger-Aliassime
-31,Nick Kyrgios
-32,Guido Pella
-33,Stan Wawrinka
-34,Marton Fucsovics
-35,Fernando Verdasco
-36,John Millman
-37,Philipp Kohlschreiber
-38,Jeremy Chardy
-39,Mikhail Kukushkin
-40,Benoit Paire
-41,Jan-Lennard Struff
-42,Radu Albot
-43,Andreas Seppi
-44,Christian Garin
-45,Dusan Lajovic
-46,Pierre-Hugues Herbert
-47,Martin Klizan
-48,Joao Sousa
-49,Hubert Hurkacz
-50,Matteo Berrettini
-51,Cameron Norrie
-52,Reilly Opelka
-53,Adrian Mannarino
-54,Steve Johnson
-55,Mackenzie McDonald
-56,Jaume Munar
-57,Leonardo Mayer
-58,Robin Haase
-59,Ugo Humbert
-60,Taylor Fritz
-61,Sam Querrey
-62,Jordan Thompson
-63,Casper Ruud
-64,Yoshihito Nishioka
-65,Aljaz Bedene
-66,Malek Jaziri
-67,Taro Daniel
-68,Bernard Tomic
-69,Federico Delbonis
-70,Hugo Dellien
-71,Ernests Gulbis
-72,Mischa Zverev
-73,Marius Copil
-74,Juan Ignacio Londero
-75,Prajnesh Gunneswaran
-76,Pablo Cuevas
-77,Albert Ramos-Vinolas
-78,Nicolas Jarry
-79,Guido Andreozzi
-80,Denis Kudla
-81,Pablo Andujar
-82,Peter Gojowczyk
-83,Feliciano Lopez
-84,Daniel Evans
-85,Andrey Rublev
-86,Miomir Kecmanovic
-87,Bradley Klahn
-88,Thomas Fabbiano
-89,Lloyd Harris
-90,Lorenzo Sonego
-91,Ivo Karlovic
-92,Tomas Berdych
-93,Ricardas Berankis
-94,Alexander Bublik
-95,Maximilian Marterer
-96,Roberto Carballes Baena
-97,Filip Krajinovic
-98,Denis Istomin
-99,Pedro Sousa
-100,Marcel Granollers
-101,Yannick Maden
-102,Ryan Harrison
-103,Paolo Lorenzi
-104,Tennys Sandgren
-105,
-106,
-107,
-108,
-109,
-110,
-111,
-112,
-113,
-114,
-115,
-116,
-117,
-118,
-119,
-120,
-121,
-122,
-123,
-124,
-125,
-126,
-127,
-128,
+,PlayerA_name,PlayerA_FR,PlayerA_righthanded,PlayerA_age,PlayerA_rank,PlayerA_rank_points
+1,Novak Djokovic,0,1,31,1,11070
+2,Rafael Nadal,0,0,32,2,8725
+3,Alexander Zverev,0,1,21,3,6040
+4,Roger Federer,0,1,37,4,5590
+5,Dominic Thiem,0,1,25,5,4765
+6,Kei Nishikori,0,1,29,6,4200
+7,Kevin Anderson,0,1,32,7,4115
+8,Stefanos Tsitsipas,0,1,20,8,3240
+9,Juan Martin del Potro,0,1,30,9,3225
+10,John Isner,0,1,33,10,3085
+11,Marin Cilic,0,1,30,11,3015
+12,Karen Khachanov,0,1,22,12,2810
+13,Borna Coric,0,1,22,13,2345
+14,Daniil Medvedev,0,1,23,14,2295
+15,Milos Raonic,0,1,28,15,2140
+16,Marco Cecchinato,0,1,26,16,2021
+17,Nikoloz Basilashvili,0,1,27,17,1930
+18,Fabio Fognini,0,1,31,18,1885
+19,Gael Monfils,1,1,32,19,1875
+20,Denis Shapovalov,0,0,19,20,1820
+21,David Goffin,0,1,28,21,1765
+22,Roberto Bautista Agut,0,1,31,22,1680
+23,Kyle Edmund,0,1,24,23,1575
+24,Diego Schwartzman,0,1,26,24,1485
+25,Alex de Minaur,0,1,20,25,1439
+26,Gilles Simon,1,1,34,26,1385
+27,Pablo Carreno Busta,0,1,27,27,1300
+28,Grigor Dimitrov,0,1,27,28,1300
+29,Frances Tiafoe,0,1,21,29,1290
+30,Richard Gasquet,1,1,32,30,1285
+31,Lucas Pouille,1,1,25,31,1275
+32,Laslo Djere,0,1,23,32,1246
+33,Felix Auger-Aliassime,0,1,18,33,1245
+34,Nick Kyrgios,0,1,23,34,1215
+35,Jo-Wilfried Tsonga,1,1,33,102,593
+36,Guido Pella,0,0,28,35,1205
+37,Stan Wawrinka,0,1,34,36,1185
+38,Marton Fucsovics,0,1,27,37,1180
+39,Fernando Verdasco,0,0,35,38,1155
+40,John Millman,0,1,29,39,1095
+41,Philipp Kohlschreiber,0,1,35,40,1090
+42,Jeremy Chardy,1,1,32,41,1055
+43,Mikhail Kukushkin,1,31,1,42,1025
+44,Benoit Paire,1,1,29,43,993
+45,Jan-Lennard Struff,0,1,28,44,990
+46,Radu Albot,0,1,29,45,977
+47,Andreas Seppi,0,1,35,46,970
+48,Christian Garin,0,1,22,47,970
+49,Dusan Lajovic,0,1,28,48,950
+50,Pierre-Hugues Herbert,1,1,28,49,948
+51,Martin Klizan,0,0,29,50,940
+52,Joao Sousa,0,1,30,51,937
+53,Hubert Hurkacz,0,1,22,52,934
+54,Matthew Ebden,0,1,31,53,931
+55,Damir Dzumhur,0,1,26,54,930
+56,Matteo Berrettini,0,1,22,55,927
+57,Cameron Norrie,0,0,23,56,925
+58,Reilly Opelka,0,1,21,57,919
+59,Adrian Mannarino,1,0,30,58,915
+60,Steve Johnson,0,1,29,59,875
+61,Mackenzie McDonald,0,1,23,60,871
+62,Jaume Munar,0,1,21,61,870
+63,Leonardo Mayer,0,1,31,62,850
+64,Robin Haase,0,1,31,63,835
+65,Ugo Humbert,1,0,20,64,819
+66,Taylor Fritz,0,1,21,65,810
+67,Sam Querrey,0,1,31,66,805
+68,Jordan Thompson,0,1,24,67,803
+69,Casper Ruud,0,1,20,68,788
+70,Yoshihito Nishioka,0,0,23,69,772
+71,Aljaz Bedene,0,1,29,70,765
+72,Malek Jaziri,0,1,35,71,757
+73,Taro Daniel,0,1,26,72,753
+74,Bernard Tomic,0,1,26,73,724
+75,Federico Delbonis,0,0,28,74,721
+76,Hugo Dellien,0,1,25,75,713
+77,Ernests Gulbis,0,1,30,76,707
+78,Mischa Zverev,0,0,31,77,706
+79,Marius Copil,0,1,28,78,698
+80,Juan Ignacio Londero,0,1,25,79,697
+81,Prajnesh Gunneswaran,0,0,29,80,688
+82,Pablo Cuevas,0,1,33,81,687
+83,Albert Ramos-Vinolas,0,0,31,82,685
+84,Nicolas Jarry,0,1,23,83,675
+85,Guido Andreozzi,0,1,27,84,668
+86,Denis Kudla,0,1,26,85,663
+87,Jozef Kovalik,0,1,26,121,476
+88,Pablo Andujar,0,1,33,86,657
+89,Peter Gojowczyk,0,1,29,87,655
+90,Feliciano Lopez,0,0,37,88,655
+91,Janko Tipsarevic,0,1,34,318,92
+92,Daniel Evans,0,1,28,89,655
+93,Andrey Rublev,0,1,21,90,654
+94,Miomir Kecmanovic,0,1,19,91,650
+95,Bradley Klahn,0,0,28,92,648
+96,Thomas Fabbiano,0,1,29,93,648
+97,Lloyd Harris,0,1,22,94,633
+98,Jiri Vesely,0,0,25,95,624
+99,Cedrik-Marcel Stebe,0,0,28,506,10
+100,Lorenzo Sonego,0,1,23,96,622
+101,Ivo Karlovic,0,1,40,97,619
+102,Tomas Berdych,0,1,33,98,605
+103,Ricardas Berankis,0,1,28,99,601
+104,Alexander Bublik,0,1,21,100,600
+105,,,,,,
+106,,,,,,
+107,,,,,,
+108,,,,,,
+109,,,,,,
+110,,,,,,
+111,,,,,,
+112,,,,,,
+113,,,,,,
+114,,,,,,
+115,,,,,,
+116,,,,,,
+117,,,,,,
+118,,,,,,
+119,,,,,,
+120,,,,,,
+121,,,,,,
+122,,,,,,
+123,,,,,,
+124,,,,,,
+125,,,,,,
+126,,,,,,
+127,,,,,,
+128,,,,,,
