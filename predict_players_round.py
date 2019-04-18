@@ -69,7 +69,7 @@ class TournamentPredictor:
         for draw in draws:
             self.winner(draw, 0)
         self.results /= nb_draws
-        np.savetxt("_Data/Predictions/players_rounds_predictions_2019_qualifications.csv", self.results, delimiter=",")
+        np.savetxt("_Data/Predictions/players_rounds_predictions_2019.csv", self.results, delimiter=",")
 
         return self.results
 

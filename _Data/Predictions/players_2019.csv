@@ -1,4 +1,4 @@
-,PlayerA_name,PlayerA_FR,PlayerA_righthanded,PlayerA_age,PlayerA_rank,PlayerA_rank_points
+,PlayerA_Name,PlayerA_FR,PlayerA_righthanded,PlayerA_age,PlayerA_rank,PlayerA_rank_points
 1,Novak Djokovic,0,1,31,1,11070
 2,Rafael Nadal,0,0,32,2,8725
 3,Alexander Zverev,0,1,21,3,6040
@@ -22,12 +22,12 @@
 21,David Goffin,0,1,28,21,1765
 22,Roberto Bautista Agut,0,1,31,22,1680
 23,Kyle Edmund,0,1,24,23,1575
-24,Diego Schwartzman,0,1,26,24,1485
+24,Diego Sebastian Schwartzman,0,1,26,24,1485
 25,Alex De Minaur,0,1,20,25,1439
 26,Gilles Simon,1,1,34,26,1385
 27,Pablo Carreno Busta,0,1,27,27,1300
 28,Grigor Dimitrov,0,1,27,28,1300
-29,Frances Tiafoe,0,1,21,29,1290
+29,Francis Tiafoe,0,1,21,29,1290
 30,Richard Gasquet,1,1,32,30,1285
 31,Lucas Pouille,1,1,25,31,1275
 32,Laslo Djere,0,1,23,32,1246
@@ -35,7 +35,7 @@
 34,Nick Kyrgios,0,1,23,34,1215
 35,Jo Wilfried Tsonga,1,1,33,102,593
 36,Guido Pella,0,0,28,35,1205
-37,Stan Wawrinka,0,1,34,36,1185
+37,Stanislas Wawrinka,0,1,34,36,1185
 38,Marton Fucsovics,0,1,27,37,1180
 39,Fernando Verdasco,0,0,35,38,1155
 40,John Millman,0,1,29,39,1095
@@ -59,12 +59,12 @@
 58,Reilly Opelka,0,1,21,57,919
 59,Adrian Mannarino,1,0,30,58,915
 60,Steve Johnson,0,1,29,59,875
-61,Mackenzie McDonald,0,1,23,60,871
+61,Mackenzie Mcdonald,0,1,23,60,871
 62,Jaume Munar,0,1,21,61,870
 63,Leonardo Mayer,0,1,31,62,850
 64,Robin Haase,0,1,31,63,835
 65,Ugo Humbert,1,0,20,64,819
-66,Taylor Fritz,0,1,21,65,810
+66,Taylor Harry Fritz,0,1,21,65,810
 67,Sam Querrey,0,1,31,66,805
 68,Jordan Thompson,0,1,24,67,803
 69,Casper Ruud,0,1,20,68,788
@@ -81,7 +81,7 @@
 80,Juan Ignacio Londero,0,1,25,79,697
 81,Prajnesh Gunneswaran,0,0,29,80,688
 82,Pablo Cuevas,0,1,33,81,687
-83,Albert Ramos Vinolas,0,0,31,82,685
+83,Albert Ramos,0,0,31,82,685
 84,Nicolas Jarry,0,1,23,83,675
 85,Guido Andreozzi,0,1,27,84,668
 86,Denis Kudla,0,1,26,85,663
