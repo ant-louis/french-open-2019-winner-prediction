@@ -93,7 +93,7 @@ def train(path, to_split=True, selected_features=None):
     with measure_time('Training...'):
         logit_model = LogisticRegression(random_state=42)
         logit_model.fit(X_train, y_train)
-        joblib.dump(logit_model, filename) 
+        #joblib.dump(logit_model, filename) 
         
     y_pred = logit_model.predict(X_train)
     print("=================================================================")
@@ -109,33 +109,10 @@ def train(path, to_split=True, selected_features=None):
 if __name__ == "__main__":
     path = "_Data/Training_dataset/training_data_weight06_+surface_weighting_min20matches.csv"
 
-    selected_features = ['Same_handedness',
-                         'age_diff',
-                         'rank_diff',
-                         'rank_points_diff',
-                         'Win%_diff',
-                         'bestof_diff',
-                         'minutes_diff',
-                         'svpt%_diff',
-                         '1st_serve%_diff',
-                         '1st_serve_won%_diff',
-                         '2nd_serve_won%_diff',
-                         'ace%_diff',
-                         'df%_diff',
-                         'bp_faced%_diff',
-                         'bp_saved%_diff']
-    
-    # selected_features = ['age_diff',
-    #                      'rank_diff',
-    #                      'rank_points_diff',
-    #                      'Win%_diff',
-    #                      'bestof_diff',
-    #                      '1st_serve_won%_diff',
-    #                      '2nd_serve_won%_diff',
-    #                      'bp_faced%_diff']
-    
     # selected_features = ['Same_handedness',
     #                      'age_diff',
+    #                      'rank_diff',
+    #                      'rank_points_diff',
     #                      'Win%_diff',
     #                      'bestof_diff',
     #                      'minutes_diff',
@@ -148,4 +125,27 @@ if __name__ == "__main__":
     #                      'bp_faced%_diff',
     #                      'bp_saved%_diff']
     
-    train(path, to_split=False, selected_features=selected_features)
+    # selected_features = ['age_diff',
+    #                      'rank_diff',
+    #                      'rank_points_diff',
+    #                      'Win%_diff',
+    #                      'bestof_diff',
+    #                      '1st_serve_won%_diff',
+    #                      '2nd_serve_won%_diff',
+    #                      'bp_faced%_diff']
+    
+    selected_features = ['Same_handedness',
+                         'age_diff',
+                         'Win%_diff',
+                         'bestof_diff',
+                         'minutes_diff',
+                         'svpt%_diff',
+                         '1st_serve%_diff',
+                         '1st_serve_won%_diff',
+                         '2nd_serve_won%_diff',
+                         'ace%_diff',
+                         'df%_diff',
+                         'bp_faced%_diff',
+                         'bp_saved%_diff']
+    
+    train(path, to_split=True, selected_features=selected_features)
