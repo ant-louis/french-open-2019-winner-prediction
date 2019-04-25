@@ -8,5 +8,5 @@ scrapedPlayerInfo/
 .DS_Store
 __pycache__/
 .ipynb_checkpoints/
-_Data/.ipynb_checkpoints/
-_Models/*.pkl
+Data/.ipynb_checkpoints/
+Models
